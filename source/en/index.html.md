@@ -313,7 +313,7 @@ Get user assets balance
 
 ## <span id="2">Fund transfer</span>
 
-> Currently supporting contract<->spot transfer, API domain name address `https://futures.api.coinstore.com/api`  Call support for ApiKey and Token
+#### Currently supporting contract<->spot transfer, API domain name address `https://futures.api.coinstore.com/api`  Call support for ApiKey and Token
 
 ### HTTP Request:
 - POST /common/account/transfer
@@ -327,10 +327,9 @@ Get user assets balance
 | clientId | String      | N| The combination of customer defined ID letters (case sensitive) and numbers can be pure letters, pure numbers, and the length should be between 1-32 bits. The format does not meet the requirements, and an error code is returned `101040502` |
 | transferType | String      | Y| Transfer direction, contract ->spot: `future-to-spot`, spot ->contract: `spot to future`, non secondary types return error codes `101040502`                                                                                                    |
 
-**Currencies currently supported for transfer**
-> USDT、BOBC、DREAMS
 
-####  Request Data
+
+>  Request Data
 
 ```json
 {
@@ -341,9 +340,8 @@ Get user assets balance
 }
 ```
 
-### Response Data
 
-Fail:
+> Response Data Fail:
 
 ```json
 {
@@ -352,7 +350,7 @@ Fail:
   "data": null
 }
 ```
-Success:
+> Response Data Success:
 
 ```json
 {

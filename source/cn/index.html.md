@@ -305,12 +305,12 @@ HTTP常见的错误码如下：
 # 资金相关
 ## <span id="2">资金划转</span>
 
-> 目前支持合约<一>现货划转, API域名地址 `https://futures.api.coinstore.com/api`  调用支持ApiKey与Token
+#### 目前支持合约<一>现货划转, API域名地址 `https://futures.api.coinstore.com/api`  调用支持ApiKey与Token
 
 ### HTTP请求:
 - POST /common/account/transfer
 
-**请求参数**
+### 请求参数
 
 |       param        |  type  |                  required                       |comment|
 | ---- | ----- |---------- |-----|
@@ -319,10 +319,9 @@ HTTP常见的错误码如下：
 | clientId | String      | N|  客户自定义ID字母（区分大小写）与数字的组合，可以是纯字母、纯数字且长度要在1-32位之间。 格式不符合要求返回错误码 `101040502`       |
 | transferType | String      | Y|  划转方向, 合约 -> 现货 : `future-to-spot`, 现货 -> 合约 : `spot-to-future`, 非次两种类型返回错误码 `101040502`     |
 
-**支持划转的币种**
-> USDT、BOBC、DREAMS
 
-**请求示例**
+> 请求示例
+
 ```json
 {
     "currencyCode":"USDT",
@@ -331,9 +330,10 @@ HTTP常见的错误码如下：
     "clientId":"SFT1679454569469"
 }
 ```
-**响应参数**
 
-失败参数示例:
+
+> 响应数据:失败参数示例:
+
 ```json
 {
   "code": 101040502,
@@ -341,7 +341,8 @@ HTTP常见的错误码如下：
   "data": null
 }
 ```
-成功:
+> 响应数据:成功:
+
 ```json
 {
     "code": 200,
@@ -349,7 +350,7 @@ HTTP常见的错误码如下：
     "data":0
 }
 ```
-> 其他响应code说明
+### 其他响应code说明
 
 |       code       |  remark                      |
 | ---- | ----- |
@@ -1514,50 +1515,6 @@ eg: `88066@kline@min_1`
 `<symbol>@ticker`, eg:  `88066@ticker`
 
 
-
-## **全市场所有Symbol 的 Ticker信息**
-按Symbol刷新的最近24小时精简ticker信息
-
-###  Stream 名称: 
-`!@ticker`
-
-> Send
-
-```lang=json
- {"op":"SUB","channel":["!@ticker"],"id":1}
-```
-
-> Receive
-
-```lang=json
-{
-    "data": [
-        {
-            "channel": "80002@ticker",
-            "open": "9996.24",
-            "high": "10048.6601",
-            "low": "9768.90178",
-            "close": "9833.12538",
-            "volume": "3362.405",
-            "amount": "33212664.57170620732",
-            "symbol": "BTCUSD", 
-            "instrumentId": 80002
-        },
-        {
-            "channel": "80001@ticker",
-            "open": "10001.57",
-            "high": "10053.9441",
-            "low": "9816.23078",
-            "close": "9832.91038",
-            "volume": "3138.93361771",
-            "amount": "31040843.0757471861414",
-            "symbol": "ETHUSD",
-            "instrumentId": 80001
-        },
-        ...
-    ]
-}
-```
 
 ## **深度信息**
 每秒或每100毫秒推送有限档深度信息。
