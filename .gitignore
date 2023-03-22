@@ -23,6 +23,7 @@ vendor/
 _yardoc
 doc/
 .idea/
+*.iml
 
 # Vagrant artifacts
 ubuntu-*-console.log
