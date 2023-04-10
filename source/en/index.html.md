@@ -445,6 +445,81 @@ Get current order
 | ├─timestamp| long |  | |
 
 
+## <span id="2"> Get current orders V2 </span>
+
+Get current order v2 version
+
+#### The new interface API domain name address `https://api.coinstore.com`  Call support for ApiKey and Token
+
+
+### HTTP Request:
+
+- GET /api/v2/trade/order/active
+
+
+> Response
+
+```json
+{
+    "data": [
+        {
+          "baseCurrency": "A123",
+          "quoteCurrency": "USDT",
+          "side": "BUY",
+          "cumQty": "0",
+          "ordId": 1758065956225025,
+          "clOrdId": "tLCGVA4g19zuEBwsITXi9g3U624Al0Bw",
+          "ordType": "LIMIT",
+          "ordQty": "10",
+          "cumAmt": "0",
+          "accountId": 1134912,
+          "timeInForce": "GTC",
+          "ordPrice": "100",
+          "leavesQty": "10",
+          "avgPrice": "0",
+          "ordStatus": "SUBMITTED",
+          "symbol": "A123USDT",
+          "timestamp": 1676622290389
+        }
+    ],
+    "code": 0
+}
+```
+
+### Request Parameters
+
+|    code    |  type   | required |       comment        |
+| ---------- | ------- | -------- | -------------------- |
+|symbol | string | N      | token pair     |
+|ordId| int    | N      | Delegate ID    |
+|clOrdId| String | N      | Client delegate ID  |
+
+
+### Response Data
+
+|       code        |  type  | example | comment                                                       |
+| ----------------- | ------ |---------|---------------------------------------------------------------|
+| code            | int    | 0       | 0: success, other: failure                                    |
+| message         | string    |         | error message                                                 |
+| data            |  list  |         |                                                               |
+| ├─baseCurrency| string |         | base currency                                                 |
+| ├─quoteCurrency| string |         | quot currency                                                 |
+| ├─timeInForce| string |   GTC      | GTC,IOC,FOK                                                   |
+| ├─ordStatus | string |   SUBMITTED      | NOT_FOUND,SUBMITTING,SUBMITTED,PARTIAL_FILLED,CANCELED,FILLED |
+| ├─avgPrice | string | 	       | Average transaction price                                     |
+| ├─ordPrice | string |         | order price                                                   |
+| ├─leavesQty| string |         |
+| ├─ordType | string | MARKET  | MARKET,LIMIT,POST_ONLY                                        |
+| ├─ordQty| string |         | order quantity|
+| ├─cumAmt| string |         | Transaction amount|
+| ├─side | string | BUY      | BUY,SELL|
+| ├─cumQty| string |         | Transaction quantity|
+| ├─ ordId      | long  |         | order id|
+| ├─ clOrdId      | string     |         | Client delegate ID|
+| ├─symbol | string |         | token pair|
+| ├─timestamp| long |         |
+
+
 ## <span id="3"> Get user's latest trade </span>
 Get all trading records
 
@@ -487,10 +562,13 @@ Get all trading records
 
 ### Request Parameters
 
-|    code    |  type   | required |       comment        |
-| ---------- | ------- | -------- | -------------------- |
-|symbol | string | Y | symbol |
-|size| int | N | 20 |
+|    code    |  type   | required | comment                       |
+| ---------- | ------- | -------- |-------------------------------|
+|symbol | string | Y | symbol                        |
+|ordId| int | N | Delegate ID                   |
+|pageNum| int | N | Current page number,default 1 |
+|pageSize| int | N | Quantity per page,default  20 |
+|side| int | N | direction -1:SELL 1:BUY       |
 
 ### Response Data
 
@@ -848,6 +926,81 @@ Get order information
 | ├─timeInForce| string | GTC |   GTC,IOC,FOK |
 | ├─timestamp| long |  | |
 | ├─avgPrice| long |  | |
+
+
+## <span id="14">Get order information V2 </span>
+Get order information v2
+
+#### The new interface API domain name address `https://api.coinstore.com`  Call support for ApiKey and Token
+
+
+### HTTP Request:
+
+- GET /api/v2/trade/order/orderInfo
+
+
+> Response
+
+```json
+{
+    "data": [
+        {
+          "baseCurrency": "A123",
+          "quoteCurrency": "USDT",
+          "side": "BUY",
+          "cumQty": "0",
+          "ordId": 1758065956225025,
+          "clOrdId": "tLCGVA4g19zuEBwsITXi9g3U624Al0Bw",
+          "ordType": "LIMIT",
+          "ordQty": "10",
+          "cumAmt": "0",
+          "accountId": 1134912,
+          "timeInForce": "GTC",
+          "ordPrice": "100",
+          "leavesQty": "10",
+          "avgPrice": "0",
+          "ordStatus": "SUBMITTED",
+          "symbol": "A123USDT",
+          "orderUpdateTime": 1676622290389,
+          "timestamp": 1676622290389
+        }
+    ],
+    "code": 0
+}
+```
+
+### Request Parameters
+
+|    code    |  type   | required |       comment        |
+| ---------- | ------- | -------- | -------------------- |
+|ordId| int    | N      | Order id (client order number 1 of 2)   |
+|clOrdId| String | N      | Client order number (order id optional)  |
+
+
+### Response Data
+
+|       code        |  type  | example       |                      comment                       |
+| ----------------- | ------ |---------------| -------------------------------------------------- |
+| code            | int    | 0             |     0: success, other: failure                                               |
+| message         | string    |               |    error message                                    |
+| data            |  list  |               | |
+| ├─baseCurrency| string |        | base currency                                                 |
+| ├─quoteCurrency| string |        | quot currency                                                 |
+| ├─timeInForce| string |   GTC  | GTC,IOC,FOK                                                   |
+| ├─ordStatus | string |   SUBMITTED | NOT_FOUND,SUBMITTING,SUBMITTED,PARTIAL_FILLED,CANCELED,FILLED |
+| ├─avgPrice | string | 	      | Average transaction price                                     |
+| ├─ordPrice | string |        | order price                                                   |
+| ├─leavesQty| string |        |
+| ├─ordType | string | MARKET | MARKET,LIMIT,POST_ONLY                                        |
+| ├─ordQty| string |        | order quantity|
+| ├─cumAmt| string |        | Transaction amount|
+| ├─side | string | BUY    | BUY,SELL|
+| ├─cumQty| string |        | Transaction quantity|
+| ├─ ordId      | long  |        | order id|
+| ├─ clOrdId      | string     |        | Client delegate ID|
+| ├─symbol | string |        | token pair|
+| ├─orderUpdateTime| long |        | The time of the last transaction or Order time|
+| ├─timestamp| long |        | |
 
 
 # Ticker Related

@@ -430,6 +430,77 @@ HTTP常见的错误码如下：
 | ├─timestamp| long | 时间戳 |
 
 
+## <span id="3">获取当前订单V2</span>
+
+获取当前订单 v2 版本
+
+#### 新接口的 API域名地址 `https://api.coinstore.com`  调用支持ApiKey与Token
+
+### HTTP请求:
+- GET /api/v2/trade/order/active
+
+> 响应
+
+```json
+{
+    "data": [
+        {
+          "baseCurrency": "A123",
+          "quoteCurrency": "USDT",
+          "side": "BUY",
+          "cumQty": "0",
+          "ordId": 1758065956225025,
+          "clOrdId": "tLCGVA4g19zuEBwsITXi9g3U624Al0Bw",
+          "ordType": "LIMIT",
+          "ordQty": "10",
+          "cumAmt": "0",
+          "accountId": 1134912,
+          "timeInForce": "GTC",
+          "ordPrice": "100",
+          "leavesQty": "10",
+          "avgPrice": "0",
+          "ordStatus": "SUBMITTED",
+          "symbol": "A123USDT",
+          "timestamp": 1676622290389
+        }
+    ],
+    "code": 0
+}
+```
+
+### 请求参数
+
+|    code    | type   | required | comment |
+| ---------- |--------|--------|---------|
+|symbol | string | N      | 交易对     |
+|ordId| int    | N      | 委托ID    |
+|clOrdId| String | N      | 客户端委托ID  |
+
+
+### 响应数据
+
+|       code    |  type  | comment                                 |
+| ------------- | ------ |-----------------------------------------|
+| code          | int    | 0：成功，其他失败                               |
+| message       | string    | 错误信息                                    |
+| data          |  list  |                                         |
+| ├─baseCurrency| string | base币                                   |
+| ├─quoteCurrency| string | quot币                                   |
+| ├─timeInForce| string | GTC,IOC,FOK                             |
+| ├─ordStatus | string | 订单状态 NOT_FOUND,SUBMITTING,SUBMITTED,PARTIAL_FILLED,CANCELED,FILLED |
+| ├─avgPrice | string | 成交均价	                                   |
+| ├─ordPrice | string | 订单价格                                    |
+| ├─leavesQty| string | 剩余数量                                    |
+| ├─ordType | string | 委托类型 MARKET,LIMIT,POST_ONLY             |
+| ├─ordQty| string | 订单数量                                    |
+| ├─cumAmt| string | 成交金额                                    |
+| ├─side | string | BUY,SELL                                |
+| ├─cumQty| string | 成交数量                                    |
+| ├─ ordId      | long  |     订单id                                |
+| ├─ clOrdId      | string     | 客户端订单id                                 |
+| ├─symbol | string | 币对                                      |
+| ├─timestamp| long | 时间戳                                     |
+
 ## <span id="3">获取用户最新成交</span>
 获取全部成交记录
 
@@ -472,10 +543,13 @@ HTTP常见的错误码如下：
 
 ### 请求参数
 
-|    code    |  type   | required |       comment        |
-| ---------- | ------- | -------- | -------------------- |
-|symbol | string | Y | 交易对 |
-|size| int | N | 20 |
+|    code    |  type   | required | comment                |
+| ---------- | ------- | -------- |------------------------|
+|symbol | string | Y | 交易对                    |
+|ordId| int | N | 委托ID                   |
+|pageNum| int | N | 当前页码，如果不传参，则默认返回 第 1 页 |
+|pageSize| int | N | 每页数量，如果不传参，则默认返回 20 条  |
+|side| int | N | 方向 -1卖出 1买入            |
 
 ### 响应数据
 
@@ -833,6 +907,80 @@ HTTP常见的错误码如下：
 | ├─timeInForce| Stirng | 成交限制类型 GTC,IOC,FOK |
 | ├─timestamp| long | 订单时间 毫秒 |
 | ├─avgPrice| long | 成交均价  |
+
+
+
+## <span id="15">获取订单信息V2</span>
+获取订单信息V2
+
+#### 新接口的 API域名地址 `https://api.coinstore.com`  调用支持ApiKey与Token
+
+
+### HTTP请求:
+- GET /api/v2/trade/order/orderInfo
+
+> 响应
+
+```json
+{
+    "data": [
+        {
+          "baseCurrency": "A123",
+          "quoteCurrency": "USDT",
+          "side": "BUY",
+          "cumQty": "0",
+          "ordId": 1758065956225025,
+          "clOrdId": "tLCGVA4g19zuEBwsITXi9g3U624Al0Bw",
+          "ordType": "LIMIT",
+          "ordQty": "10",
+          "cumAmt": "0",
+          "accountId": 1134912,
+          "timeInForce": "GTC",
+          "ordPrice": "100",
+          "leavesQty": "10",
+          "avgPrice": "0",
+          "ordStatus": "SUBMITTED",
+          "symbol": "A123USDT",
+          "orderUpdateTime": 1676622290389,
+          "timestamp": 1676622290389
+        }
+    ],
+    "code": 0
+}
+```
+
+### 请求参数
+
+|    code    | type   | required | comment |
+| ---------- |--------|--------|---------|
+|ordId| int    | N      | 委托ID    |
+|clOrdId| String | N      | 客户端委托ID  |
+
+
+### 响应数据
+
+|       code    |  type  | comment                                 |
+| ------------- | ------ |-----------------------------------------|
+| code          | int    | 0：成功，其他失败                               |
+| message       | string    | 错误信息                                    |
+| data          |  list  |                                         |
+| ├─baseCurrency| string | base币                                   |
+| ├─quoteCurrency| string | quot币                                   |
+| ├─timeInForce| string | GTC,IOC,FOK                             |
+| ├─ordStatus | string | 订单状态 NOT_FOUND,SUBMITTING,SUBMITTED,PARTIAL_FILLED,CANCELED,FILLED |
+| ├─avgPrice | string | 成交均价	                                   |
+| ├─ordPrice | string | 订单价格                                    |
+| ├─leavesQty| string | 剩余数量                                    |
+| ├─ordType | string | 委托类型 MARKET,LIMIT,POST_ONLY             |
+| ├─ordQty| string | 订单数量                                    |
+| ├─cumAmt| string | 成交金额                                    |
+| ├─side | string | BUY,SELL                                |
+| ├─cumQty| string | 成交数量                                    |
+| ├─ ordId      | long  |     订单id                                |
+| ├─ clOrdId      | string     | 客户端订单id                                 |
+| ├─symbol | string | 币对                                      |
+| ├─orderUpdateTime| long | 订单状态更新时间：若未成交，则系统返回“订单创建时间”；若已成交，则系统返回最近一笔成交的时间             |
+| ├─timestamp| long | 时间戳                                     |
 
 
 # 行情相关

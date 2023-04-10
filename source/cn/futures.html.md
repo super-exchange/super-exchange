@@ -699,19 +699,197 @@ HTTP常见的错误码如下：
 | - accountType| int  | 账号类型 |
 | - clientOrderId| string  | 客户端委托ID,如果不传使用uuid |
 | - contractId| int  | 合约ID|
-| - marginRate| string  | 保证金率，全仓时>0，逐仓时>0|
-| - leverage| int  | 保证金倍数|
+| - initMarginRate| string  | 保证金率，全仓时>0，逐仓时>0|
 | - marginType| int  | 保证金类型，全仓1，逐仓2|
 | - minimalQuantity| string  | 最新成交数量，order_type等于3（市价）时非必填//前端不传|
 | - orderSubType| int  |0（默认值），1（被动委托），2（最近价触发条件委托），3（指数触发条件委托），4（标记价触发条件委托）|
 | - orderType| int  | 委托类型，1（限价），3（市价）|
 | - positionEffect| int  | 开平标志，开仓1，平仓2|
-| - price| string  | 委托价格,order_type等于3（市价）时非必填|
-| - quantity| string  | 委托数量|
+| - orderPrice| string  | 委托价格,order_type等于3（市价）时非必填|
+| - orderQty| string  | 委托数量|
 | - side| int  | 买1，卖-1|
 | - stopCondition| int  | 止损,order_type等于3（市价）时非必填；值域：1（止盈，未启用），2（止损，未启用），3（只减仓，未启用） //前端不传|
 | - stopPrice| string  | 止损价格，order_type等于3（市价）时非必填 //条件单时|
 | - symbol| string  | 合约名称|
+
+
+## <span id="2">获取当前订单V2</span>
+
+获取当前订单 V2 版本
+
+#### 新接口的 API域名地址 `https://futures.coinstore.com`  调用支持ApiKey与Token
+
+
+### HTTP请求:
+
+- GET /api/v2/trade/order/active
+
+
+> 响应
+
+```json
+{
+    "code": 0,
+    "msg": "success",
+    "data": [
+          {
+            "orderStatus": 2,
+            "avgPrice": "0",
+            "matchQty": "0",
+            "matchAmt": "0",
+            "accountType": 1,
+            "orderPrice": "100",
+            "timeInForce": 1,
+            "orderType": 1,
+            "clOrderId": "1626933997000",
+            "positionEffect": 1,
+            "marginType": 2,
+            "stopCondition": 0,
+            "orderSubType": 0,
+            "marginLeverage": 10,
+            "orderQty": "5000",
+            "remainQty": "5000",
+            "orderTime": 1626933997312000,
+            "stopPrice": "0",
+            "initMarginRate": "0.1",
+            "side": 1,
+            "orderId": "1705963943362561",
+            "contractId": 2902104,
+            "accountId": 29475591730
+          }
+    ]
+}
+```
+
+### 请求参数
+
+|    code    |  type   | required | comment |
+| ---------- | ------- | -------- |---------|
+|contractId| int    | N      | 合约id    |
+|ordId| int    | N      | 委托ID    |
+|clOrdId| String | N      | 客户端委托ID |
+
+
+### 响应数据
+
+|       code        | type   | comment                                                           |
+| ----------------- |--------|-------------------------------------------------------------------|
+| code            | int    | 0                                                                 |     0：成功，其他失败                                               |
+| msg         | string |                                                                   |    错误信息                                    |
+| data            | list   |                                                                   |
+| - accountType| int    | 账户类型 1：user 2:system 3:bonus  4:follow                            |
+| - contractId| int    | 合约ID                                                              |
+| - orderId| long   | 委托ID                                                              |
+| - clOrderId| string | 客户端委托ID                                                           |
+| - orderStatus| int    | 委托状态 0：未申报 1:正在申报 2:已申报未成交 3:部分成交 4: 全部成交 5：部分撤单 6： 全部撤单 7:撤单中 8:失效	                         |
+| - timeInForce| int    | 成交限制类型：1:GTC, 2:IOC, 3:FOK	                                                           |
+| - initMarginRate| string | 保证金率                                                              |
+| - marginLeverage| int    | 保证金倍数	                                                            |
+| - marginType| int    | 保证金类型，全仓1，逐仓2                                                     |
+| - orderType| int    | 委托类型 1：LIMIT  2：条件单限价  3：MARKET  4：条件单市价	                         |
+| - orderSubType| int    | 0（默认值），1（被动委托），2（最近价触发条件委托），3（指数触发条件委托），4（标记价触发条件委托）              |
+| - positionEffect| int    | 开平标志，开仓1，平仓2                                                      |
+| - orderPrice| string | 委托价格：委托价格,order_type等于3（市价）时非必填	                                  |
+| - orderQty| string | 委托数量                                                              |
+| - side| int    | 方向 1：做多  -1：做空	                                                   |
+| - stopCondition| int    | 止损,order_type等于3（市价）时非必填；值域：1（止盈，未启用），2（止损，未启用），3（只减仓，未启用） //前端不传 |
+| - stopPrice| string | 止损价格，order_type等于3（市价）时非必填 //条件单时                                 |
+| - matchQty| string | 累积成交数量                                                            |
+| - matchAmt	| string | 累积成交金额                                                            |
+| - avgPrice| String | 成交均价                                                              |
+| - remainQty| int    | 剩余数量                                                              |
+| - orderTime| long   | 委托时间                                                              |
+
+
+## <span id="2">获取订单信息V2</span>
+
+获取订单信息 V2 版本
+
+#### 新接口的 API域名地址 `https://futures.coinstore.com`  调用支持ApiKey与Token
+
+### HTTP请求:
+
+- GET /api/v2/trade/order/orderInfo
+
+
+> 响应
+
+```json
+{
+    "code": 0,
+    "msg": "success",
+    "data": [
+          {
+            "accountType": 1,
+            "contractId": 100100001,
+            "orderId": 1736859343912961,
+            "clOrderId": "ZznkeIhHR4yEHmAUF0J6wA#1018",
+            "orderStatus": 6,
+            "timeInForce": 1,
+            "marginLeverage": 0,
+            "marginType": 1,
+            "orderType": 3,
+            "positionEffect": 1,
+            "orderPrice": "0",
+            "orderQty": "7134",
+            "side": 1,
+            "stopCondition": "0",
+            "stopPrice": "0",
+            "matchQty": "0",
+            "matchAmt": "0",
+            "avgPrice": "0",
+            "remainQty": "0",
+            "profitAndLoss": "0",
+            "fee": "0",
+            "feeCurrencyName": "USDT",
+            "orderUpdateTime": 1656398147046,
+            "orderTime": 1656398147046
+          }
+    ]
+}
+```
+
+### 请求参数
+
+|    code    |  type   | required | comment |
+| ---------- | ------- | -------- |---------|
+|ordId| int    | N      | 委托ID    |
+|clOrdId| String | N      | 客户端委托ID |
+
+
+### 响应数据
+
+| code             | type   | comment                                                              |
+|------------------|--------|----------------------------------------------------------------------|
+| code             | int    | 0                                                                    |     0：成功，其他失败                                               |
+| msg              | string |                                                                      |    错误信息                                    |
+| data             | list   |                                                                      |
+| - accountType    | int    | 账户类型 1：user 2:system 3:bonus  4:follow                               |
+| - contractId     | int    | 合约ID                                                                 |
+| - orderId        | long   | 委托ID                                                                 |
+| - clOrderId      | string | 客户端委托ID                                                              |
+| - orderStatus    | int    | 委托状态 0：未申报 1:正在申报 2:已申报未成交 3:部分成交 4: 全部成交 5：部分撤单 6： 全部撤单 7:撤单中 8:失效	 |
+| - timeInForce    | int    | 成交限制类型：1:GTC, 2:IOC, 3:FOK	                                          |
+| - marginLeverage | int    | 保证金倍数	                                                               |
+| - marginType     | int    | 保证金类型，全仓1，逐仓2                                                        |
+| - orderType      | int    | 委托类型 1：LIMIT  2：条件单限价  3：MARKET  4：条件单市价	                            |
+| - positionEffect | int    | 开平标志，开仓1，平仓2                                                         |
+| - orderPrice     | string | 委托价格：委托价格,order_type等于3（市价）时非必填	                                     |
+| - orderQty       | string | 委托数量                                                                 |
+| - side           | int    | 方向 1：做多  -1：做空	                                                      |
+| - stopCondition  | string | 止损,order_type等于3（市价）时非必填；值域：1（止盈，未启用），2（止损，未启用），3（只减仓，未启用） //前端不传    |
+| - stopPrice      | string | 止损价格，order_type等于3（市价）时非必填 //条件单时                                    |
+| - matchQty       | string | 累积成交数量                                                               |
+| - matchAmt	      | string | 累积成交金额                                                               |
+| - avgPrice       | String | 成交均价                                                                 |
+| - remainQty      | string | 剩余数量                                                                 |
+| - profitAndLoss  | String | 盈亏                                                                   |
+| - fee            | String | 累计手续费	                                                                 |
+| - feeCurrencyName       | String | 交易手续费币种	                                                                 |
+| - orderUpdateTime       | long   | 订单状态更新时间：若未成交，则系统返回“订单创建时间”；若已成交，则系统返回最近一笔成交的时间	                                                                 |
+| - orderTime      | long   | 委托时间                                                                 |
+
+
 
 ##  <span id="3">取消委托单</span>
 取消委托单
@@ -926,7 +1104,7 @@ HTTP常见的错误码如下：
 
 
 
-## <span id="3">获取用户最新成交</span>
+## <span id="3">获取用户全部成交</span>
 获取全部成交记录
 
 ### HTTP请求: 
@@ -1019,6 +1197,77 @@ HTTP常见的错误码如下：
 | -	bidPnl	|	Double	  |	买方平仓盈亏	|
 | -	askPnlType	|	int	  |	卖方盈亏类型：0正常成交1正常平仓2强平3强减	|
 | -	askPnl	|	Double	  |	卖方平仓盈亏	|
+
+
+## <span id="4">获取用户全部成交V2</span>
+获取全部成交记录 V2 版本
+
+#### 新接口的 API域名地址 `https://futures.coinstore.com`  调用支持ApiKey与Token
+
+
+### HTTP请求:
+- GET /api/v2/trade/order/queryHisMatch
+
+
+> 响应
+
+```json
+{
+  "code" : 0,
+  "data" : [ {
+      "accountId": 3431,
+      "contractId": 100300144,
+      "orderId": 1762426675003393,
+      "clOrdId": "c819f4d2282f486d9ed4711327d6381e",
+      "matchId": 10763,
+      "tradeId": 2177,
+      "execSize": 6,
+      "matchAmt": -0.672000000000000000,
+      "avgPrice": 112.000000000000000000,
+      "orderStatus": 4,
+      "orderRole": "MAKER",
+      "remainingSize": 0,
+      "pnl": 0.0,
+      "fee": 0.000168,
+      "matchTime": 1680781089260
+  } ],
+  "msg" : "string"
+}
+```
+
+### 请求参数
+
+|    code    | type   | required | comment            |
+| ---------- |--------| -------- |--------------------|
+| contractId| int    |N| 合约id               |
+| ordId| int      |N| 委托ID               |
+| pageNum| string |N| 页数，如果不传参，则默认返回 1 页 |
+| pageSize| string |N| 每页数量，默认20          |
+| side| string |N| 方向 -1做空 1做多        |
+
+### 响应数据
+
+| code             | type     | comment                                                               |
+|------------------|----------|-----------------------------------------------------------------------|
+| code             | int      | 0                                                                     |     0：成功，其他失败                                               |
+| msg              | string   |                                                                       |    错误信息                                    |
+| data             | object   |                                                                       |
+| -	accountId	     | 	int	    | 	账户id	                                                                |
+| -	contractId	    | 	long	   | 	交易对ID、合约号	                                                           |
+| -	orderId	       | 	Long	   | 	委托ID	                                                                |
+| -	clOrdId	       | 	string	 | 	客户端委托ID	                                                             |
+| -	matchId	       | 	Long	   | 	撮合ID	                                                                |
+| -	tradeId	       | 	Long	   | 	成交ID	                                                                |
+| -	execSize	      | 	int	    | 	成交数量	                                                                |
+| -	matchAmt	      | 	Double	 | 	成交金额	                                                                |
+| -	avgPrice	      | 	Double	 | 	成交均价	                                                                |
+| -	orderStatus	   | 	int	    | 	委托状态 0：未申报 1:正在申报 2:已申报未成交 3:部分成交 4: 全部成交 5：部分撤单 6： 全部撤单 7:撤单中 8:失效	 |
+| -	orderRole	     | 	string	 | 	角色：Taker,Maker		                                                     |
+| -	remainingSize	 | 	int	    | 	剩余数量	                                                                |
+| -	pnl	           | 	Double	 | 	盈亏	                                                                  |
+| -	fee	           | 	Double	 | 	累积手续费	                                                               |
+| -	matchTime	     | 	Long	   | 	成交时间	                           |
+
 
 ## <span id="3">用户强减记录</span>
 获取全部成交记录

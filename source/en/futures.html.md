@@ -742,6 +742,185 @@ Get active order
 | - stopPrice| string  | stop price, not required when order_type is 3 (market) //in case of conditional order|
 | - symbol| string  | contract name|
 
+
+## <span id="2">Get active order V2</span>
+
+Get active order V2 version
+
+#### The new interface API domain name address `https://futures.coinstore.com`  Call support for ApiKey and Token
+
+### HTTP Request:
+
+- GET /api/v2/trade/order/active
+
+
+> Response
+
+```json
+{
+    "code": 0,
+    "message": "success",
+    "data": [
+        {
+          "orderStatus": 2,
+          "avgPrice": "0",
+          "matchQty": "0",
+          "matchAmt": "0",
+          "accountType": 1,
+          "orderPrice": "100",
+          "timeInForce": 1,
+          "orderType": 1,
+          "clOrderId": "1626933997000",
+          "positionEffect": 1,
+          "marginType": 2,
+          "stopCondition": 0,
+          "orderSubType": 0,
+          "marginLeverage": 10,
+          "orderQty": "5000",
+          "remainQty": "5000",
+          "orderTime": 1626933997312000,
+          "stopPrice": "0",
+          "initMarginRate": "0.1",
+          "side": 1,
+          "orderId": "1705963943362561",
+          "contractId": 2902104,
+          "accountId": 29475591730
+        }
+    ]
+}
+```
+
+### Request Parameters
+
+|    code    |  type   | required | comment            |
+| ---------- | ------- | -------- |--------------------|
+|contractId| int    | N      | contract id        |
+|ordId| int    | N      | Delegate ID        |
+|clOrdId| String | N      | Client delegate ID |
+
+
+### Response Data
+
+|       code        |  type  | comment                                                                                                                                                                           |
+| ----------------- | ------ |-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| code            | int    | 0                                                                                                                                                                                 |     0: success, other: failure                                               |
+| message         | string    |                                                                                                                                                                                   |    error message                                    |
+| data            |  list  |                                                                                                                                                                                   |
+| - accountType| int    | account type 1：user 2:system 3:bonus  4:follow                                                                                                                                    |
+| - contractId| int    | contract id                                                                                                                                                                       |
+| - orderId| long   | Delegate ID                                                                                                                                                                       |
+| - clOrderId| string | Client delegate ID                                                                                                                                                                |
+| - orderStatus| int    | order status 0：NOT_DECLARE 1:IN_DECLARE 2:NOT_MATCH 3:PORTION_MATCH 4: ALL_MATCH 5：PORTION_CANCEL 6： ALL_CANCEL 7:IN_CANCEL 8:INVALID	                                                                                                      |
+| - timeInForce| int    | Type of transaction restriction：1:GTC, 2:IOC, 3:FOK	                                                                                                                              |
+| - initMarginRate| string | Margin ratio                                                                                                                                                                      |
+| - marginLeverage| int    | Margin multiple	                                                                                                                                                                  |
+| - marginType| int    | margin type, 1: cross, 2: isolated                                                                                                                                                |
+| - orderType| int    | order type 1：LIMIT  2：Condition of single price  3：MARKET  4：Conditional market price	                                                                                            |
+| - orderSubType| int    | 0 (default value), 1 (passive order), 2 (latest price triggering conditional order), 3 (index triggering conditional order), 4 (marked price triggering conditional order)        |
+| - positionEffect| int    | position effect, 1 (open), 2 (close)                                                                                                                                              |
+| - orderPrice| string | non required when order_type is 3 (market)	                                                                                                                                       |
+| - orderQty| string | order quantity                                                                                                                                                                    |
+| - side| int    | buy: 1, sell: -1	                                                                                                                                                                 |
+| - stopCondition| int    | stop loss, non required when order_type is 3 (market); range: 1 (take profit, not enabled), 2 (stop loss, not enabled), 3 (only reduction, not enabled) //not passed at front-end |
+| - stopPrice| string | stop price, not required when order_type is 3 (market) //in case of conditional order                                                                                             |
+| - matchQty| string | match quantity                                                                                                                                                                    |
+| - matchAmt	| string | match amount                                                                                                                                                                      |
+| - avgPrice| String | Average transaction price                                                                                                                                                         |
+| - remainQty| int    | remain   quantity                                                                                                                                                                 |
+| - orderTime| long   | order time                                                                                                                                                                        |
+
+
+## <span id="2">get order info V2</span>
+
+get order info V2 version
+
+#### The new interface API domain name address `https://futures.coinstore.com`  Call support for ApiKey and Token
+
+### HTTP请求:
+
+- GET /api/v2/trade/order/orderInfo
+
+
+> 响应
+
+```json
+{
+    "code": 0,
+    "msg": "success",
+    "data": [
+          {
+            "accountType": 10,
+            "contractId": 100100001,
+            "orderId": 1736859343912961,
+            "clOrderId": "ZznkeIhHR4yEHmAUF0J6wA#1018",
+            "orderStatus": 6,
+            "timeInForce": 1,
+            "marginLeverage": 0,
+            "marginType": 1,
+            "orderType": 3,
+            "positionEffect": 1,
+            "orderPrice": "0",
+            "orderQty": "7134",
+            "side": 1,
+            "stopCondition": "0",
+            "stopPrice": "0",
+            "matchQty": "0",
+            "matchAmt": "0",
+            "avgPrice": "0",
+            "remainQty": "0",
+            "profitAndLoss": "0",
+            "fee": "0",
+            "feeCurrencyName": "USDT",
+            "orderUpdateTime": 1656398147046,
+            "orderTime": 1656398147046
+          }
+    ]
+}
+```
+
+### 请求参数
+
+|    code    |  type   | required | comment |
+| ---------- | ------- | -------- |---------|
+|ordId| int    | N      | Order id    |
+|clOrdId| String | N      | Client order number |
+
+
+### 响应数据
+
+| code             | type   | comment                                                                                                                                                                           |
+|------------------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| code             | int    | 0                                                                                                                                                                                 |     0：成功，其他失败                                               |
+| msg              | string |                                                                                                                                                                                   |    错误信息                                    |
+| data             | list   |                                                                                                                                                                                   |
+| - accountType| int    | account type 1：user 2:system 3:bonus  4:follow                                                                                                                                    |
+| - contractId| int    | contract id                                                                                                                                                                       |
+| - orderId| long   | Delegate ID                                                                                                                                                                       |
+| - clOrderId| string | Client delegate ID                                                                                                                                                                |
+| - orderStatus| int    | order status 0：NOT_DECLARE 1:IN_DECLARE 2:NOT_MATCH 3:PORTION_MATCH 4: ALL_MATCH 5：PORTION_CANCEL 6： ALL_CANCEL 7:IN_CANCEL 8:INVALID	                                            |
+| - timeInForce| int    | Type of transaction restriction：1:GTC, 2:IOC, 3:FOK	                                                                                                                              |
+| - initMarginRate| string | Margin ratio                                                                                                                                                                      |
+| - marginLeverage| int    | Margin multiple	                                                                                                                                                                  |
+| - marginType| int    | margin type, 1: cross, 2: isolated                                                                                                                                                |
+| - orderType| int    | order type 1：LIMIT  2：Condition of single price  3：MARKET  4：Conditional market price	                                                                                            |
+| - orderSubType| int    | 0 (default value), 1 (passive order), 2 (latest price triggering conditional order), 3 (index triggering conditional order), 4 (marked price triggering conditional order)        |
+| - positionEffect| int    | position effect, 1 (open), 2 (close)                                                                                                                                              |
+| - orderPrice| string | non required when order_type is 3 (market)	                                                                                                                                       |
+| - orderQty| string | order quantity                                                                                                                                                                    |
+| - side| int    | buy: 1, sell: -1	                                                                                                                                                                 |
+| - stopCondition| String    | stop loss, non required when order_type is 3 (market); range: 1 (take profit, not enabled), 2 (stop loss, not enabled), 3 (only reduction, not enabled) //not passed at front-end |
+| - stopPrice| string | stop price, not required when order_type is 3 (market) //in case of conditional order                                                                                             |
+| - matchQty| string | match quantity                                                                                                                                                                    |
+| - matchAmt	| string | match amount                                                                                                                                                                      |
+| - avgPrice| String | Average transaction price                                                                                                                                                         |
+| - remainQty| int    | remain   quantity                                                                                                                                                                 |
+| - profitAndLoss  | String | Profit and loss                                                                                                                                                                   |
+| - fee            | String | Accumulated commission	                                                                                                                                                           |
+| - feeCurrencyName       | String | Transaction fee currency	                                                                                                                                                         |
+| - orderUpdateTime       | long   | The time of the last transaction or Order time	                                                                                                                                   |
+| - orderTime      | long   | order time                                                                                                                                                                        |
+
+
 ## <span id="3">Cancel orders</span>
 Cancel orders
 
@@ -958,7 +1137,7 @@ Batch cancellation according to order id
 
 
 
-## <span id="3">Get user's latest trade</span>
+## <span id="3">Get user's all trade records</span>
 Get all trade records
 
 ### HTTP Request: 
@@ -1051,6 +1230,78 @@ Get all trade records
 | -	bidPnl	|	Double	  |	bid close P&L	|
 | -	askPnlType	|	int	  |	ask P&L type: 0: ordinary trade, 1: ordinary close, 2: liquidation, 3: forced deduction	|
 | -	askPnl	|	Double	  |	ask close P&L	|
+
+
+## <span id="3">Get user's all trade records V2</span>
+Get all trade records V2 version
+
+#### The new interface API domain name address `https://futures.coinstore.com`  Call support for ApiKey and Token
+
+### HTTP Request:
+- GET /api/v2/trade/order/queryHisMatch
+
+
+> Response
+
+```json
+{
+  "code" : 0,
+  "data" : [
+      {
+        "accountId": 3431,
+        "contractId": 100300144,
+        "orderId": 1762426675003393,
+        "clOrdId": "c819f4d2282f486d9ed4711327d6381e",
+        "matchId": 10763,
+        "tradeId": 2177,
+        "execSize": 6,
+        "matchAmt": -0.672000000000000000,
+        "avgPrice": 112.000000000000000000,
+        "orderStatus": 4,
+        "orderRole": "MAKER",
+        "remainingSize": 0,
+        "pnl": 0.0,
+        "fee": 0.000168,
+        "matchTime": 1680781089260
+      }
+  ],
+  "message" : "string"
+}
+```
+
+### Request Parameters
+
+|    code    | type   | required | comment             |
+| ---------- |--------| -------- |---------------------|
+| contractId| int    |N| contract id         |
+| ordId| long      |N| order id             |
+|pageNum| int | N | Current page number,default 1 |
+|pageSize| int | N | Quantity per page,default  20 |
+| side| int    |N| side -1 sell, 1 buy |
+
+### Response Data
+
+| code                 |  type  | comment                                                                                                                                 |
+|----------------------| ------ |-----------------------------------------------------------------------------------------------------------------------------------------|
+| code                 | int    | 0                                                                                                                                       |     0: success, other: failure                                               |
+| message              | string    |                                                                                                                                         |    error message                                    |
+| data                 | object|                                                                                                                                         |
+| -	accountId	         | 	int	    | 	account id	                                                                                                                            |
+| -	contractId	        | 	long	   | 	symbol ID, contract ID	                                                                                                                |
+| -	orderId	           | 	Long	   | 	order ID	                                                                                                                              |
+| -	clOrdId	           | 	string	 | 	Client delegate ID	                                                                                                                    |
+| -	matchId	           | 	Long	   | 	match ID	                                                                                                                              |
+| -	tradeId	           | 	Long	   | 	deal ID	                                                                                                                               |
+| -	execSize	          | 	int	    | 	Transaction quantity	                                                                                                                  |
+| -	matchAmt	          | 	Double	 | 	Transaction amount	                                                                                                                    |
+| -	avgPrice	          | 	Double	 | 	Average transaction price	                                                                                                             |
+| -	orderStatus	       | 	int	    | 	order status 0：NOT_DECLARE 1:IN_DECLARE 2:NOT_MATCH 3:PORTION_MATCH 4: ALL_MATCH 5：PORTION_CANCEL 6： ALL_CANCEL 7:IN_CANCEL 8:INVALID	 |
+| -	orderRole	         | 	string	 | 	role：Taker,Maker		                                                                                                                     |
+| -	remainingSize	     | 	int	    | 	remain quantity	                                                                                                                       |
+| -	pnl	               | 	Double	 | 	Profit and loss	                                                                                                                       |
+| -	fee	               | 	Double	 | 	Accumulated commission	                                                                                                                |
+| -	matchTime	         | 	Long	   | 	match time	                                                                                                                            |
+
 
 ## <span id="3">User forced reduction</span>
 Get all trade records
