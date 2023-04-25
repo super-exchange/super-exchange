@@ -681,6 +681,8 @@ Cancel orders
 ## <span id="6"> Create order </span>
 Create order
 
+#### Regular user accounts are only allowed to hold up to 50 active orders at the same time, while market-making accounts are not subject to this restriction.If you are a market maker but do not have permission to add a market-making account, please contact the Coinstore delivery department.
+
 > Request Body
 
 ```json
@@ -735,6 +737,10 @@ Create order
 
 ## <span id="13"> Batch ordering </span>
 Batch ordering
+
+
+#### Regular user accounts are only allowed to hold up to 50 active orders at the same time, while market-making accounts are not subject to this restriction.If you are a market maker but do not have permission to add a market-making account, please contact the Coinstore delivery department.
+
 
 > Request Body
 
