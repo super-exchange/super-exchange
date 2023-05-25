@@ -5,7 +5,7 @@ language_tabs: # must be one of https://git.io/vQNgJ
   
 
 toc_footers:
- 
+
 includes:
   
 language: 简体中文
