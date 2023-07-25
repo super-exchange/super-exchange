@@ -246,6 +246,79 @@ HTTP常见的错误码如下：
 | 0      | 成功                             | code=0 成功， code >0 失败 |
 
 
+# 基础信息
+
+## <span id="1">现货币种币对信息</span>
+
+获取现货币种币对信息
+
+### HTTP请求:
+- POST /v2/public/config/spot/symbols
+
+### 请求参数
+
+| param | type | required | comment |
+|-------|------|----------|---------|
+|   symbolCodes    | 数组   | 非必需      | 币对Code  |
+|   symbolIds    | 数组   | 非必需      | 币对ID    |
+
+> 请求
+
+```json
+{
+  "symbolCodes":["BTCUSDT"],
+  "symbolIds":[10]
+}
+```
+### 响应数据
+
+| code                | type      | comment        |
+|---------------------|-----------|----------------|
+| code                | int       | 0：成功，其他失败      |
+| message             | String    | 错误信息           |
+| data                | Object [] | 业务数据           |
+| - symbolId          | Long      | 币对ID           |
+| - symbolCode        | String    | 币对Code         |
+| - tradeCurrencyCode | String    | 交易货币币种           |
+| - quoteCurrencyCode | String    | 计价货币币种             |
+| - openTrade         | boolean   |是否开放交易：true是，false否 |
+| - onLineTime        | Long      |上线日期：Unix时间戳的毫秒数格式，如 1597026383085 |
+| - tickSz            | Integer   |下单价格精度（tickSz） |
+| - lotSz             | Integer   |下单数量精度（lotSz）|
+| - minLmtPr          | String   |限价最小交易最小价（minLmtPr） |
+| - minLmtSz          | String   |限价最小交易数量（minLmtSz） |
+| - minMktVa         | String   |市价最小交易最小额（minMktVa） |
+| - minMktSz         | String   |市价最小交易数量（minMktSz） |
+| - makerFee         | String   |Maker 手续费 |
+| - takerFee         | String   |Taker 手续费 |
+
+> 响应
+
+```json
+{
+    "code": "0",
+    "message": "Success",
+    "data": [
+        {
+            "symbolId": 1,
+            "symbolCode": "BTCUSDT",
+            "tradeCurrencyCode": "btc",
+            "quoteCurrencyCode": "usdt",
+            "openTrade": true,
+            "onLineTime": 1609813531019,
+            "tickSz": 0,
+            "lotSz": 4,
+            "minLmtPr": "0.0002",
+            "minLmtSz": "0.2",
+            "minMktVa": "0.1",
+            "minMktSz": "0.1",
+            "makerFee": "0.006",
+            "takerFee": "0.003"
+        }
+    ]
+}
+```
+
 # 账户相关
 
 

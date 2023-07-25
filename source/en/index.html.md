@@ -252,6 +252,80 @@ In case of failure, the response message carries error description information, 
 | 0      | success                             | code=0 success, code >0 failure |
 
 
+# Basic Information
+
+
+## <span id="1">Currency & spot information</span>
+
+Get currency & spot information
+
+### HTTP Request:
+- POST /v2/public/config/spot/symbols
+
+### Request Params
+
+| param | type  | required | comment     |
+|-------|-------|----------|-------------|
+|   symbolCodes    | array | no       | symbol Code |
+|   symbolIds    | array    | no       | symbol ID   |
+
+> Request
+
+```json
+{
+  "symbolCodes":["BTCUSDT"],
+  "symbolIds":[10]
+}
+```
+### Response Data
+
+| code                | type      | comment                            |
+|---------------------|-----------|------------------------------------|
+| code                | int       | 0：success, other: failure      |
+| message             | String    | Error message           |
+| data                | Object [] | Transaction data          |
+| - symbolId          | Long      | Currency id           |
+| - symbolCode        | String    | Currency name         |
+| - tradeCurrencyCode | String    | Base currency, e.g. BTC inBTC-USDT           |
+| - quoteCurrencyCode | String    | Quote currency, e.g. USDT in BTC-USDT            |
+| - openTrade         | boolean   |open trade:true, off trade:false |
+| - onLineTime        | Long      |Listing time, Unix timestamp format in milliseconds, e.g. 1597026383085 |
+| - tickSz            | Integer   |Tick size, e.g. 0 |
+| - lotSz             | Integer   |Lot size, e.g. 1 |
+| - minLmtPr          | String   |The minimum order price of the limit order |
+| - minLmtSz          | String   |The minimum order quantity of the limit order |
+| - minMktVa         | String   |The minimum order volume of the market order|
+| - minMktSz         | String   |The minimum order quantity of the market order |
+| - makerFee         | String   |Maker fee |
+| - takerFee         | String   |Taker fee |
+
+> 响应
+
+```json
+{
+    "code": "0",
+    "message": "Success",
+    "data": [
+        {
+            "symbolId": 1,
+            "symbolCode": "BTCUSDT",
+            "tradeCurrencyCode": "btc",
+            "quoteCurrencyCode": "usdt",
+            "openTrade": true,
+            "onLineTime": 1609813531019,
+            "tickSz": 0,
+            "lotSz": 4,
+            "minLmtPr": "0.0002",
+            "minLmtSz": "0.2",
+            "minMktVa": "0.1",
+            "minMktSz": "0.1",
+            "makerFee": "0.006",
+            "takerFee": "0.003"
+        }
+    ]
+}
+```
+
 # Account Related
 
 
