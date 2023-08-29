@@ -1786,21 +1786,62 @@ levels表示几档买卖单信息, 可选 5/10/20/50/100档
 
 ## **登陆**
 登陆时可以同时指定订阅数据
-
+例如获取资产
 ```lang=json
 {
-    "op": "LOGIN",
-    "channel": [
-        "7@account",
-        "80002@order"
+    "op":"login",
+    "channel":[
+        "spot_asset"
     ],
-    "auth": {
-        "user-id":4930,     // 用户登陆账号的 user id 或者子账号的 user id
-        "token": "eb737c84862f3d"  // 登陆之后的 token； 端上登陆用户使用登陆后的token， api 用户填写  api-key
-        "type": "token"      // 可选值范围：token | api , 默认为 token， api 用户填写 api
+    "auth":{
+        "token":"****9e8eaf9fe9f7558661232aa9****","type":"apikey","expires":1692942248236,"signature":"****2e0c936b279a6dfbe1696dd217152f82e73413bc681f57f0eced8ebc****"
+
+    },
+    "params":{
     }
-    "id": 2
 }
+```
+例如获取订单
+```lang=json
+{
+    "op":"login",
+    "channel":[
+        "spot_order"
+    ],
+    "auth":{
+        "token":"****9e8eaf9fe9f7558661232aa9****","type":"apikey","expires":1692942248236,"signature":"****2e0c936b279a6dfbe1696dd217152f82e73413bc681f57f0eced8ebc****"
+
+    },
+    "params":{
+    }
+}
+```
+
+
+websocket签名生成方法 JAVA
+```lang=json
+
+    public static void main(String[] args) {
+        try {
+            Mac hmacSha256 = Mac.getInstance("HmacSHA256");
+            String secret = "****6fea34cd140315552a76ae6c****";
+            long timeMillis = 1692942248236L; // Replace with your desired fixed timestamp in milliseconds
+            String payload = "" + timeMillis + "";
+            String time = String.valueOf(timeMillis / 30_000); // Replace with your desired fixed timestamp divided by 30,000
+            System.out.println("time==" + timeMillis);
+            hmacSha256.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+            byte[] hash = hmacSha256.doFinal(time.getBytes(StandardCharsets.UTF_8));
+            String key = Hex.encodeHexString(hash);
+            hmacSha256.reset();
+            hmacSha256.init(new SecretKeySpec(key.getBytes(), "HmacSHA256"));
+            hash = hmacSha256.doFinal(payload.getBytes(StandardCharsets.UTF_8));
+            String sign = Hex.encodeHexString(hash);
+            System.out.println("sign==" + sign);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 ```
 
 ## **账户**

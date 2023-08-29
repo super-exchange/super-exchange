@@ -1856,20 +1856,62 @@ Levels indicates the levels of the buy or sell orders, and 5/10/20/50/100 level 
 
 Specify subscription data when logging in
 
+for example fetch asset info
 ```lang=json
 {
-    "op": "LOGIN",
-    "channel": [
-        "7@account",
-        "80002@order"
+    "op":"login",
+    "channel":[
+        "spot_asset"
     ],
-    "auth": {
-        "user-id":4930,     // user id of user login account or user id of sub-account
-        "token": "eb737c84862f3d"  // token after login; the client user uses the token after login, and the api user fills in the api-key
-        "type": "token"      // optional values: token | api; default value is token; api users fill in api
+    "auth":{
+        "token":"****9e8eaf9fe9f7558661232aa9****","type":"apikey","expires":1692942248236,"signature":"****2e0c936b279a6dfbe1696dd217152f82e73413bc681f57f0eced8ebc****"
+
+    },
+    "params":{
     }
-    "id": 2
 }
+```
+for example fetch order info
+```lang=json
+{
+    "op":"login",
+    "channel":[
+        "spot_order"
+    ],
+    "auth":{
+        "token":"****9e8eaf9fe9f7558661232aa9****","type":"apikey","expires":1692942248236,"signature":"****2e0c936b279a6dfbe1696dd217152f82e73413bc681f57f0eced8ebc****"
+
+    },
+    "params":{
+    }
+}
+```
+
+
+method of signature generation in JAVA
+```lang=json
+
+    public static void main(String[] args) {
+        try {
+            Mac hmacSha256 = Mac.getInstance("HmacSHA256");
+            String secret = "****6fea34cd140315552a76ae6c****";
+            long timeMillis = 1692942248236L; // Replace with your desired fixed timestamp in milliseconds
+            String payload = "" + timeMillis + "";
+            String time = String.valueOf(timeMillis / 30_000); // Replace with your desired fixed timestamp divided by 30,000
+            System.out.println("time==" + timeMillis);
+            hmacSha256.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
+            byte[] hash = hmacSha256.doFinal(time.getBytes(StandardCharsets.UTF_8));
+            String key = Hex.encodeHexString(hash);
+            hmacSha256.reset();
+            hmacSha256.init(new SecretKeySpec(key.getBytes(), "HmacSHA256"));
+            hash = hmacSha256.doFinal(payload.getBytes(StandardCharsets.UTF_8));
+            String sign = Hex.encodeHexString(hash);
+            System.out.println("sign==" + sign);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 ```
 
 ## **Account**
