@@ -1914,6 +1914,34 @@ method of signature generation in JAVA
     }
 ```
 
+method of signature generation in python
+```lang=json
+
+    import binascii
+    import hashlib
+    import hmac
+    import time
+    
+    def main():
+        secret = '****6fea34cd140315552a76ae6c****'
+        timeMillis = int(time.time() * 1000)  # Get current timestamp in milliseconds
+        payload = str(timeMillis)
+        timeInterval = int(timeMillis / 30000)  # Calculate the time interval
+    
+        print("time==", timeMillis)
+    
+        hash = hmac.new(bytes(secret, 'utf-8'), bytes(str(timeInterval), 'utf-8'), hashlib.sha256).digest()
+        key = binascii.hexlify(hash).decode()
+    
+        hash = hmac.new(bytes(key, 'utf-8'), bytes(payload, 'utf-8'), hashlib.sha256).digest()
+        sign = binascii.hexlify(hash).decode()
+    
+        print("sign==", sign)
+    
+    if __name__ == "__main__":
+        main()
+```
+
 ## **Account**
 
 Stream Name: `<currency>@account`, or `!@account` all currency
