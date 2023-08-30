@@ -1856,10 +1856,9 @@ Levels indicates the levels of the buy or sell orders, and 5/10/20/50/100 level 
 
 Specify subscription data when logging in
 
-for example fetch asset info   
+> for example fetch asset info   
 
 ```lang=json   
-
 {
     "op":"login",
     "channel":[
@@ -1872,13 +1871,11 @@ for example fetch asset info
     "params":{
     }
 }   
-
 ```   
 
-for example fetch order info   
+> for example fetch order info
 
 ```lang=json   
-
 {
     "op":"login",
     "channel":[
@@ -1891,14 +1888,14 @@ for example fetch order info
     "params":{
     }
 }   
-
 ```
 
 
-method of signature generation in JAVA   
+### **method of signature generation in JAVA**
+
+> example for java
 
 ```lang=json   
-
     public static void main(String[] args) {
         try {
             Mac hmacSha256 = Mac.getInstance("HmacSHA256");
@@ -1919,15 +1916,15 @@ method of signature generation in JAVA
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }   
-    
+    }       
 ```   
 
 
-method of signature generation in python   
+### **method of signature generation in python**  
+
+> example for python
 
 ```lang=json   
-
     import binascii
     import hashlib
     import hmac
@@ -1950,8 +1947,7 @@ method of signature generation in python
         print("sign==", sign)
     
     if __name__ == "__main__":
-        main()   
-        
+        main()       
 ```   
 
 

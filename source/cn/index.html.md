@@ -1787,10 +1787,9 @@ levels表示几档买卖单信息, 可选 5/10/20/50/100档
 ## **登陆**
 登陆时可以同时指定订阅数据
 
-例如获取资产  
+> 例如获取资产  
 
 ```lang=json   
-
 {
     "op":"login",
     "channel":[
@@ -1803,13 +1802,11 @@ levels表示几档买卖单信息, 可选 5/10/20/50/100档
     "params":{
     }
 }   
-
 ```
 
-例如获取订单  
+> 例如获取订单  
 
 ```lang=json
-
 {
     "op":"login",
     "channel":[
@@ -1822,14 +1819,14 @@ levels表示几档买卖单信息, 可选 5/10/20/50/100档
     "params":{
     }
 }   
-
 ```
 
 
-websocket签名生成方法 JAVA   
+### **websocket签名生成方法 JAVA** 
+
+> java 签名生产方法
 
 ```lang=json
-
     public static void main(String[] args) {
         try {
             Mac hmacSha256 = Mac.getInstance("HmacSHA256");
@@ -1851,13 +1848,13 @@ websocket签名生成方法 JAVA
             e.printStackTrace();
         }
     }   
-    
 ```   
 
-websocket签名生成方法 python   
+### **websocket签名生成方法 python**
+
+> python 签名生成方法
 
 ```lang=json
-
     import binascii
     import hashlib
     import hmac
@@ -1880,8 +1877,7 @@ websocket签名生成方法 python
         print("sign==", sign)
     
     if __name__ == "__main__":
-        main()  
-         
+        main()     
 ```   
 
 ## **账户**
