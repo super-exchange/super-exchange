@@ -1920,7 +1920,7 @@ Specify subscription data when logging in
 ```   
 
 
-### **method of signature generation in python**  
+### **method of signature generation in Python**  
 
 > example for python
 
@@ -1950,6 +1950,61 @@ Specify subscription data when logging in
         main()       
 ```   
 
+### **websocket demo for Python**
+
+> demo
+
+```python   
+import json
+import websocket
+import threading
+
+# subscription
+fixed_request_data = {
+    "op": "login",
+    "channel": ["spot_asset"],
+    "auth": {
+        "token": "****9e8eaf9fe9f7558661232aa9****",
+        "type": "apikey",
+        "expires": 1692942248236,
+        "signature": "****2e0c936b279a6dfbe1696dd217152f82e73413bc681f57f0eced8ebc****"
+    },
+    "params": {
+        "symbolIds": []
+    }
+}
+
+
+def on_message(ws, message):
+    print("Received:", message)
+
+
+def on_error(ws, error):
+    print("Error:", error)
+
+
+def on_close(ws, close_status_code, close_msg):
+    print("Connection closed")
+
+
+def on_open(ws):
+    def run(*args):
+        #
+        request_json = json.dumps(fixed_request_data)
+        ws.send(request_json)
+
+    threading.Thread(target=run).start()
+
+
+if __name__ == "__main__":
+    ws = websocket.WebSocketApp("wss://ws.coinstore.com/s/ws",
+                                on_message=on_message,
+                                on_error=on_error,
+                                on_close=on_close)
+    ws.on_open = on_open
+    ws.run_forever()
+
+```
 
 ## **Account**
 
