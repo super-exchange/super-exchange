@@ -1885,46 +1885,67 @@ levels表示几档买卖单信息, 可选 5/10/20/50/100档
 > 样例
 
 ```python   
+import binascii
+import hashlib
+import hmac
 import json
 import websocket
 import threading
 
-# 订阅
+def main():
+    public = 'replace your apikey'
+    secret = 'replace your secretkey'
+    timeMillis = 1695268668648  # Replace with your timestamp in milliseconds
+    payload = str(timeMillis)
+    time = str(int(timeMillis / 30_000))
+    print("apikey==",public)
+    print("time==", timeMillis)
+
+    hash = hmac.new(bytes(secret, 'utf-8'), bytes(time, 'utf-8'), hashlib.sha256).digest()
+    key = binascii.hexlify(hash).decode()
+
+    hash = hmac.new(bytes(key, 'utf-8'), bytes(payload, 'utf-8'), hashlib.sha256).digest()
+    sign = binascii.hexlify(hash).decode()
+
+    print("sign==", sign)
+    return public, timeMillis, sign
+
+# subscription
+
 fixed_request_data = {
     "op": "login",
     "channel": ["spot_asset"],
     "auth": {
-        "token": "****9e8eaf9fe9f7558661232aa9****",
+        "token": '',  # Placeholder for the token
         "type": "apikey",
-        "expires": 1692942248236,
-        "signature": "****2e0c936b279a6dfbe1696dd217152f82e73413bc681f57f0eced8ebc****"
+        "expires": 0,  # Placeholder for the expiration timestamp
+        "signature": ''  # Placeholder for the signature
     },
     "params": {
         "symbolIds": []
     }
 }
 
-
 def on_message(ws, message):
     print("Received:", message)
-
 
 def on_error(ws, error):
     print("Error:", error)
 
-
 def on_close(ws, close_status_code, close_msg):
     print("Connection closed")
 
-
 def on_open(ws):
+    public, timeMillis, sign = main()  # Get values from main function
+    fixed_request_data["auth"]["token"] = public
+    fixed_request_data["auth"]["expires"] = timeMillis
+    fixed_request_data["auth"]["signature"] = sign
+
     def run(*args):
-        #
         request_json = json.dumps(fixed_request_data)
         ws.send(request_json)
 
     threading.Thread(target=run).start()
-
 
 if __name__ == "__main__":
     ws = websocket.WebSocketApp("wss://ws.coinstore.com/s/ws",
@@ -1933,7 +1954,6 @@ if __name__ == "__main__":
                                 on_close=on_close)
     ws.on_open = on_open
     ws.run_forever()
-
 ```
 
 ## **账户**
