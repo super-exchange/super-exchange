@@ -57,11 +57,10 @@ Coinstore API提供的服务会在此持续更新，请大家及时关注。
 
 # 快速开始
 
-## 接入准备
+## 创建APIkey
 
 如需使用API，请先登录网页端，通过【用户中心】-【API管理】创建一个API key，再据此文档详情进行开发和交易。
-
-您可以点击 'https://www.coinstore.com/#/user/bindAuth/ManagementAPI' 创建 API Key。
+[您可以点击创建APIKey]: https://www.coinstore.com/#/user/bindAuth/ManagementAPI
 
 每个用户可创建5组API Key，每组API key可以绑定5个不同的IP地址。API key一旦绑定了IP地址，则只能从绑定的IP地址使用该API key调用API接口。出于安全考虑，强烈建议您为API key绑定相应的IP地址。
 
@@ -69,6 +68,7 @@ Coinstore API提供的服务会在此持续更新，请大家及时关注。
 
 - `API Key`  API 访问密钥
 - `Secret Key` 签名认证加密所使用的密钥
+
 
 ## 接口类型
 Coinstore为用户提供两种接口，您可根据自己的使用场景和偏好来选择适合的方式进行查询行情、交易。
@@ -109,6 +109,15 @@ WebSocket是HTML5一种新的协议（Protocol）。它实现了客户端与服�
 
 为保证API服务的稳定性，建议使用日本AWS云服务器进行访问。如使用中国大陆境内的客户端服务器，连接的稳定性将难以保证。
 
+## 限频规则
+
+**相同ip**
+
+`相同ip每3秒最多300个请求`
+
+**每个用户**
+
+`相同用户3秒最多120个请求`
 
 ## <span id="a4">签名认证</span>
 
@@ -186,6 +195,8 @@ Mac hmacSha256 = Mac.getInstance("HmacSHA256");
 **Python示例**
 
  https://coinstore-sg-encryption.s3.ap-southeast-1.amazonaws.com/filesUpload/ex1/public/coinstore.py
+ 
+ `推荐python sdk使用3.9版本，使用如果版本低于3.9版本，可能会造成兼容性或者签名计算有误的情况。`
 
 # API接入说明
 
@@ -293,6 +304,40 @@ HTTP常见的错误码如下：
 | - makerFee         | String   |Maker 手续费 |
 | - takerFee         | String   |Taker 手续费 |
 
+> python 
+
+```python
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/v2/public/config/spot/symbols"
+api_key=b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+   'X-CS-APIKEY': api_key,
+ 'X-CS-SIGN': signature,
+ 'X-CS-EXPIRES': str(expires),
+ 'exch-language': 'en_US',
+ 'Content-Type': 'application/json',
+ 'Accept': '*/*',
+ # 'Host': 'https://api.coinstore.com',
+ 'Connection': 'keep-alive'
+}
+response = requests.request("POST", url, headers=headers, data=payload)
+print(response.text)
+```
+
 > 响应
 
 ```json
@@ -330,6 +375,39 @@ HTTP常见的错误码如下：
 ### HTTP请求: 
 - POST /spot/accountList
 
+> python 
+
+```python
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/spot/accountList"
+api_key=b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+   'X-CS-APIKEY': api_key,
+ 'X-CS-SIGN': signature,
+ 'X-CS-EXPIRES': str(expires),
+ 'exch-language': 'en_US',
+ 'Content-Type': 'application/json',
+ 'Accept': '*/*',
+ # 'Host': 'https://api.coinstore.com',
+ 'Connection': 'keep-alive'
+}
+response = requests.request("POST", url, headers=headers, data=payload)
+print(response.text)
+```
 
 > 响应 
 
@@ -379,7 +457,7 @@ HTTP常见的错误码如下：
 # 资金相关
 ## <span id="2">资金划转</span>
 
-#### 目前支持合约<一>现货划转, API域名地址 `https://futures.api.coinstore.com/api`  调用支持ApiKey与Token
+#### 目前支持合约<一>现货划转, API域名地址 `https://futures.api.coinstore.com/api`  调用支持ApiKey
 
 ### HTTP请求:
 - POST /common/account/transfer
@@ -442,6 +520,31 @@ HTTP常见的错误码如下：
 
 ### HTTP请求: 
 - GET /trade/order/active
+
+> python 
+
+```python
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests 
+url = "https://api.coinstore.com/api/trade/order/active"
+api_key=b'your api_key'
+secret_key = b'your secret_key' 
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = ''
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {'X-CS-APIKEY':api_key,'X-CS-SIGN':signature,'X-CS-EXPIRES':str(expires),'Content-Type':'application/json'}
+response = requests.request("GET", url, headers=headers, data=payload)
+print(response.text)
+```
 
 > 响应
 
@@ -508,10 +611,34 @@ HTTP常见的错误码如下：
 
 获取当前订单 v2 版本
 
-#### 新接口的 API域名地址 `https://api.coinstore.com`  调用支持ApiKey与Token
+#### 新接口的 API域名地址 `https://api.coinstore.com`  调用支持ApiKey
 
 ### HTTP请求:
 - GET /api/v2/trade/order/active
+
+> python 
+
+```python
+import hashlib
+import hmac
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/v2/trade/order/active"
+api_key=b'your api_key'
+secret_key = b'your secret_key'  
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = 'symbol=btcusdt'
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {'X-CS-APIKEY':api_key,'X-CS-SIGN':signature,'X-CS-EXPIRES':str(expires),'Content-Type':'application/json'}
+response = requests.request("GET", url, headers=headers, data=payload)
+print(response.text)
+```
 
 > 响应
 
@@ -580,6 +707,37 @@ HTTP常见的错误码如下：
 
 ### HTTP请求: 
 - GET /trade/match/accountMatches
+
+> python 
+
+```python
+import hashlib
+import hmac
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/trade/match/accountMatches?symbol=tipusdt"
+api_key=b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time()* 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = 'symbol=tipusdt'
+payload=payload.encode("utf-8")
+signature = hmac.new(key,payload, hashlib.sha256).hexdigest()
+headers = {
+   'X-CS-APIKEY': api_key,
+ 'X-CS-SIGN': signature,
+ 'X-CS-EXPIRES': str(expires),
+ 'Content-Type': 'application/json'
+}
+response = requests.request("GET", url, headers=headers)
+print(response.text)
+```
+
+
 
 
 > 响应
@@ -667,6 +825,32 @@ HTTP常见的错误码如下：
 }
 ```
 
+> python 
+
+```python
+import hashlib
+import hmac
+import math
+import time
+import requests
+import json
+url = "https://api.coinstore.com/api/trade/order/cancel"
+api_key=b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({"symbol":"btcusdt","orderId":1782425964251297})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {'X-CS-APIKEY':api_key,'X-CS-SIGN':signature,'X-CS-EXPIRES':str(expires),'Content-Type':'application/json'}
+response = requests.request("POST", url, headers=headers, data=payload)
+print(response.text)
+```
+
+
 > 响应
 
 ```json
@@ -711,6 +895,45 @@ HTTP常见的错误码如下：
 }
 ```
 
+
+> python 
+
+```python
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/trade/order/cancelAll"
+api_key=b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+  "symbol": "BTCUSDT"
+ })
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+   'X-CS-APIKEY': api_key,
+ 'X-CS-SIGN': signature,
+ 'X-CS-EXPIRES': str(expires),
+ 'exch-language': 'en_US',
+ 'Content-Type': 'application/json',
+ 'Accept': '*/*',
+ # 'Host': 'https://api.coinstore.com',
+ 'Connection': 'keep-alive'
+}
+response = requests.request("POST", url, headers=headers, data=payload)
+print(response.text)
+```
+
+
+
 > 响应
 
 ```json
@@ -749,6 +972,47 @@ HTTP常见的错误码如下：
 	"ordQty": "12323231243",
 	"timestamp": 1642407805168
 }
+```
+
+> python 
+
+```python
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/trade/order/place"
+api_key=b'your api_key'
+secret_key = b'your secret key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+    "ordPrice": "30000",
+ "ordQty": "1",
+ # "clOrdId": "8vdpfHC0LmhojVIffOlkBc9bV9992",
+ "symbol": "BTCUSDT",
+ "side": "BUY",
+ "ordType": "LIMIT"
+ })
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+   'X-CS-APIKEY': api_key,
+ 'X-CS-SIGN': signature,
+ 'X-CS-EXPIRES': str(expires),
+ 'exch-language': 'en_US',
+ 'Content-Type': 'application/json',
+ 'Accept': '*/*',
+ # 'Host': 'https://api.coinstore.com',
+ 'Connection': 'keep-alive'
+}
+response = requests.request("POST", url, headers=headers, data=payload)
+print(response.text)
 ```
 
 > 响应
@@ -819,6 +1083,58 @@ HTTP常见的错误码如下：
 }
 ```
 
+> python 
+
+```python
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/trade/order/placeBatch"
+api_key=b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+    "symbol":"BTCUSDT",
+ "orders":[
+        {
+            "side":"BUY",
+ "ordType":"LIMIT",
+ "ordPrice":28000,
+ "ordQty":"2"
+ },
+ {
+            "side":"BUY",
+ "ordType":"LIMIT",
+ "ordPrice":30000,
+ "ordQty":"1"
+ }
+    ],
+ "timestamp":expires}
+)
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+   'X-CS-APIKEY': api_key,
+ 'X-CS-SIGN': signature,
+ 'X-CS-EXPIRES': str(expires),
+ 'exch-language': 'en_US',
+ 'Content-Type': 'application/json',
+ 'Accept': '*/*',
+ # 'Host': 'https://api.coinstore.com',
+ 'Connection': 'keep-alive'
+}
+response = requests.request("POST", url, headers=headers, data=payload)
+print(response.text)
+```
+
+
 > 响应
 
 ```json
@@ -883,6 +1199,31 @@ HTTP常见的错误码如下：
 }
 ```
 
+> python 
+
+```python
+import hashlib
+import hmac
+import math
+import time
+import requests
+import json
+url = "https://api.coinstore.com/api/trade/order/cancelBatch"
+api_key=b'your api_key'
+secret_key = b'secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({"symbol":"btcusdt","orderId":[1782428898165698]})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {'X-CS-APIKEY':api_key,'X-CS-SIGN':signature,'X-CS-EXPIRES':str(expires),'Content-Type':'application/json'}
+response = requests.request("POST", url, headers=headers, data=payload)
+print(response.text)
+```
+
 > 响应
 
 ```json
@@ -920,6 +1261,36 @@ HTTP常见的错误码如下：
 
 ## <span id="14">获取订单信息</span>
 获取订单信息
+
+> python 
+
+```python
+import hashlib
+import hmac
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/trade/order/orderInfo?ordId=1780715084580128"
+api_key=b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time()* 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = 'ordId=1780715084580128'
+payload=payload.encode("utf-8")
+signature = hmac.new(key,payload, hashlib.sha256).hexdigest()
+headers = {
+   'X-CS-APIKEY': api_key,
+ 'X-CS-SIGN': signature,
+ 'X-CS-EXPIRES': str(expires),
+ 'Content-Type': 'application/json'
+}
+response = requests.request("GET", url, headers=headers)
+print(response.text)
+```
+
 
 > 响应
 
@@ -991,11 +1362,41 @@ HTTP常见的错误码如下：
 ## <span id="15">获取订单信息V2</span>
 获取订单信息V2
 
-#### 新接口的 API域名地址 `https://api.coinstore.com`  调用支持ApiKey与Token
+#### 新接口的 API域名地址 `https://api.coinstore.com`  调用支持ApiKey
 
 
 ### HTTP请求:
 - GET /api/v2/trade/order/orderInfo
+
+
+> python 
+
+```python
+import hashlib
+import hmac
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/v2/trade/order/orderInfo?ordId=1780715084580128"
+api_key=b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time()* 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = 'ordId=1780715084580128'
+payload=payload.encode("utf-8")
+signature = hmac.new(key,payload, hashlib.sha256).hexdigest()
+headers = {
+   'X-CS-APIKEY': api_key,
+ 'X-CS-SIGN': signature,
+ 'X-CS-EXPIRES': str(expires),
+ 'Content-Type': 'application/json'
+}
+response = requests.request("GET", url, headers=headers)
+print(response.text)
+```
 
 > 响应
 
@@ -1442,10 +1843,6 @@ wss://ws.coinstore.com/s/ws
 
 1. https://tools.ietf.org/html/rfc6455#section-5.5.3 
 
-2. https://developer.mozilla.org/zh-CN/docs/Web/API/WebSockets_API/Writing_WebSocket_servers#Pings%E5%92%8CPongs%EF%BC%9AWebSockets%E7%9A%84%E5%BF%83%E8%B7%B3 
-
-
-
 
 > Example
 
@@ -1607,7 +2004,7 @@ $>wscat -c 'ws://127.0.0.1:8080/s/ws'
 ### Stream Name
 `<symbol>@trade`
 
-eg: `88066@trade`
+eg: `4@trade`
  
 ### param
  `param":{"size":2}`
@@ -1647,7 +2044,7 @@ K线stream逐秒推送所请求的K线种类(最新一根K线)的更新。
 ### Stream Name
 `<symbol>@kline@<interval>`
   
-eg: `88066@kline@min_1`
+eg: `4@kline@min_1`
 
 ### interval 可选值
 * min_1
@@ -1776,247 +2173,25 @@ eg: `88066@kline@min_1`
 ### Stream Names
 `<symbol>@depth@<levels>` 
 
- eg:  `88066@depth@50`
+ eg:  `4@depth@50`
  
 ### levels 可选值
 levels表示几档买卖单信息, 可选 5/10/20/50/100档
 
+# 错误码
+
+### 错误码: 
+
+| Code               | Comment                                |
+| ------------------ | -------------------------------------- |
+| unauthorized 1401 | 请求ip不在IP白名单中                   |
+| signature error 3005 | 签名生成错误                         |
+| symbol not found 3011 | 该币对没有上线                      |
+| account-insufficient 3113 | 账户余额不足                     |
+| duplicate-order 3011 | 重复订单                             |
+| order-not-found 3103 | 订单未找到或者该订单不属于当前账号   |
 
 
-
-## **登陆**
-登陆时可以同时指定订阅数据
-
-> 例如获取资产  
-
-```lang=json   
-{
-    "op":"login",
-    "channel":[
-        "spot_asset"
-    ],
-    "auth":{
-        "token":"****9e8eaf9fe9f7558661232aa9****","type":"apikey","expires":1692942248236,"signature":"****2e0c936b279a6dfbe1696dd217152f82e73413bc681f57f0eced8ebc****"
-
-    },
-    "params":{
-    }
-}   
-```
-
-> 例如获取订单  
-
-```lang=json
-{
-    "op":"login",
-    "channel":[
-        "spot_order"
-    ],
-    "auth":{
-        "token":"****9e8eaf9fe9f7558661232aa9****","type":"apikey","expires":1692942248236,"signature":"****2e0c936b279a6dfbe1696dd217152f82e73413bc681f57f0eced8ebc****"
-
-    },
-    "params":{
-    }
-}   
-```
-
-
-### **websocket签名生成方法 JAVA** 
-
-> java 签名生产方法
-
-```lang=json
-    public static void main(String[] args) {
-        try {
-            Mac hmacSha256 = Mac.getInstance("HmacSHA256");
-            String secret = "****6fea34cd140315552a76ae6c****";
-            long timeMillis = 1692942248236L; // Replace with your desired fixed timestamp in milliseconds
-            String payload = "" + timeMillis + "";
-            String time = String.valueOf(timeMillis / 30_000); // Replace with your desired fixed timestamp divided by 30,000
-            System.out.println("time==" + timeMillis);
-            hmacSha256.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-            byte[] hash = hmacSha256.doFinal(time.getBytes(StandardCharsets.UTF_8));
-            String key = Hex.encodeHexString(hash);
-            hmacSha256.reset();
-            hmacSha256.init(new SecretKeySpec(key.getBytes(), "HmacSHA256"));
-            hash = hmacSha256.doFinal(payload.getBytes(StandardCharsets.UTF_8));
-            String sign = Hex.encodeHexString(hash);
-            System.out.println("sign==" + sign);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }   
-```   
-
-### **websocket签名生成方法 python**
-
-> python 签名生成方法
-
-```lang=json
-    import binascii
-    import hashlib
-    import hmac
-    import time
-    
-    def main():
-        secret = '****6fea34cd140315552a76ae6c****'
-        timeMillis = int(time.time() * 1000)  # Get current timestamp in milliseconds
-        payload = str(timeMillis)
-        timeInterval = int(timeMillis / 30000)  # Calculate the time interval
-    
-        print("time==", timeMillis)
-    
-        hash = hmac.new(bytes(secret, 'utf-8'), bytes(str(timeInterval), 'utf-8'), hashlib.sha256).digest()
-        key = binascii.hexlify(hash).decode()
-    
-        hash = hmac.new(bytes(key, 'utf-8'), bytes(payload, 'utf-8'), hashlib.sha256).digest()
-        sign = binascii.hexlify(hash).decode()
-    
-        print("sign==", sign)
-    
-    if __name__ == "__main__":
-        main()     
-```   
-
-### **websocket python 样例**
-
-> 样例
-
-```python   
-import binascii
-import hashlib
-import hmac
-import json
-import websocket
-import threading
-
-def main():
-    public = 'replace your apikey'
-    secret = 'replace your secretkey'
-    timeMillis = 1695268668648  # Replace with your timestamp in milliseconds
-    payload = str(timeMillis)
-    time = str(int(timeMillis / 30_000))
-    print("apikey==",public)
-    print("time==", timeMillis)
-
-    hash = hmac.new(bytes(secret, 'utf-8'), bytes(time, 'utf-8'), hashlib.sha256).digest()
-    key = binascii.hexlify(hash).decode()
-
-    hash = hmac.new(bytes(key, 'utf-8'), bytes(payload, 'utf-8'), hashlib.sha256).digest()
-    sign = binascii.hexlify(hash).decode()
-
-    print("sign==", sign)
-    return public, timeMillis, sign
-
-# subscription
-
-fixed_request_data = {
-    "op": "login",
-    "channel": ["spot_asset"],
-    "auth": {
-        "token": '',  # Placeholder for the token
-        "type": "apikey",
-        "expires": 0,  # Placeholder for the expiration timestamp
-        "signature": ''  # Placeholder for the signature
-    },
-    "params": {
-        "symbolIds": []
-    }
-}
-
-def on_message(ws, message):
-    print("Received:", message)
-
-def on_error(ws, error):
-    print("Error:", error)
-
-def on_close(ws, close_status_code, close_msg):
-    print("Connection closed")
-
-def on_open(ws):
-    public, timeMillis, sign = main()  # Get values from main function
-    fixed_request_data["auth"]["token"] = public
-    fixed_request_data["auth"]["expires"] = timeMillis
-    fixed_request_data["auth"]["signature"] = sign
-
-    def run(*args):
-        request_json = json.dumps(fixed_request_data)
-        ws.send(request_json)
-
-    threading.Thread(target=run).start()
-
-if __name__ == "__main__":
-    ws = websocket.WebSocketApp("wss://ws.coinstore.com/s/ws",
-                                on_message=on_message,
-                                on_error=on_error,
-                                on_close=on_close)
-    ws.on_open = on_open
-    ws.run_forever()
-```
-
-## **账户**
-
- Stream Name: `<currency>@account`, or `!@account` all currency
-
-```lang=json
-{
-    "accountId": 12,
-    "currency": "BTC",
-    "frozen": "21.03",
-    "available": "3128.29",
-    "timestamp": 1602493840  // 单位 s
-}
-
-```
-
-## **成交订单**
-
- Stream Name: `<symbol>@order`, or `!@order` all symbol's
-
-```lang=json
-{
-    // increment
-    
-    "version": 12,
-
-    // order base info, never change
-
-    "accountId": 1,
-    "ordId": 12,
-    "symbol": "BTCUSDT",
-    "side": "BUY",
-    "ordType": "LIMIT",
-    "timeInForce": "GTC",
-    "ordPrice": "128.21",
-    "ordQty": "11.21",
-    "ordAmt": "231.2",
-
-    // order state
-    "ordState": "PARTIAL_FILLED",
-
-    // sum every trade time
-
-    "execQty": "12.2",
-    "execAmt": "312.12",
-    "remainingQty": "1.2",
-
-    // current trade info,  present meaning values when `matchQty` is bigger than 0
-
-    "matchId": 12,
-    "tradeId": 123,
-    "matchRole": "TAKER",
-    "matchQty": "1.9",
-    "matchAmt": "390.29",
-    "selfDealingQty": "1.9",
-    "actualFeeRate": "0.002",
-    "feeCurrencyId": 12,
-    "fee": 0.21,
-
-    "timestamp": 1602493840 // 单位 s
-}
-```
 
 ## **字典**
 

@@ -254,7 +254,7 @@ In case of failure, the response message carries error description information, 
 Get currency & contract information
 
 ### HTTP Request: 
-- POST  /api/configs/public
+- GET /api/configs/public
 
 
 > Response 
@@ -747,7 +747,7 @@ Get active order
 
 Get active order V2 version
 
-#### The new interface API domain name address `https://futures.coinstore.com`  Call support for ApiKey and Token
+#### The new interface API domain name address `https://futures.coinstore.com`  Call support for ApiKey
 
 ### HTTP Request:
 
@@ -834,14 +834,14 @@ Get active order V2 version
 
 get order info V2 version
 
-#### The new interface API domain name address `https://futures.coinstore.com`  Call support for ApiKey and Token
+#### The new interface API domain name address `https://futures.coinstore.com`  Call support for ApiKey
 
-### HTTP请求:
+### HTTP Request:
 
 - GET /api/v2/trade/order/orderInfo
 
 
-> 响应
+> response
 
 ```json
 {
@@ -878,7 +878,7 @@ get order info V2 version
 }
 ```
 
-### 请求参数
+### request paramters
 
 |    code    |  type   | required | comment |
 | ---------- | ------- | -------- |---------|
@@ -886,7 +886,7 @@ get order info V2 version
 |clOrdId| String | N      | Client order number |
 
 
-### 响应数据
+### response parameters
 
 | code             | type   | comment                                                                                                                                                                           |
 |------------------|--------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -1235,7 +1235,7 @@ Get all trade records
 ## <span id="3">Get user's all trade records V2</span>
 Get all trade records V2 version
 
-#### The new interface API domain name address `https://futures.coinstore.com`  Call support for ApiKey and Token
+#### The new interface API domain name address `https://futures.coinstore.com`  Call support for ApiKey
 
 ### HTTP Request:
 - GET /api/v2/trade/order/queryHisMatch

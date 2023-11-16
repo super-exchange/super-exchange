@@ -130,7 +130,7 @@ body {
         text-align: left;
         min-width: 160px;
         padding: 0 20px;
-        font-size: 12px;
+        font-size: 14px;
         line-height: 40px;
         height: 40px;
         -webkit-box-sizing: border-box;
@@ -220,7 +220,7 @@ body {
       color: $nav-text;
       border-radius:2px;
       border:1px solid rgba(41,52,72,1);
-      font-size: 12px;
+      font-size: 14px;
       caret-color:$nav-active-text;
       &::-webkit-input-placeholder{ /* WebKit browsers 适配谷歌 */
         color:#828EA1;
@@ -266,7 +266,7 @@ body {
     &.visible {
       height: 30%;
       margin-bottom: 1em;
-      font-size:12px;
+      font-size:14px;
     }
 
     li {
@@ -508,7 +508,7 @@ body {
     padding: 0 $main-padding;
     box-sizing: border-box;
     display: block;
-    font-size:12px;
+    font-size:14px;
     @extend %left-col;
   }
 

@@ -228,7 +228,7 @@ HTTP常见的错误码如下：
 获取币种币对信息
 
 ### HTTP请求: 
-- POST  /api/configs/public
+- GET /api/configs/public
 
 
 > 响应 
@@ -717,7 +717,7 @@ HTTP常见的错误码如下：
 
 获取当前订单 V2 版本
 
-#### 新接口的 API域名地址 `https://futures.coinstore.com`  调用支持ApiKey与Token
+#### 新接口的 API域名地址 `https://futures.coinstore.com`  调用支持ApiKey
 
 
 ### HTTP请求:
@@ -805,7 +805,7 @@ HTTP常见的错误码如下：
 
 获取订单信息 V2 版本
 
-#### 新接口的 API域名地址 `https://futures.coinstore.com`  调用支持ApiKey与Token
+#### 新接口的 API域名地址 `https://futures.coinstore.com`  调用支持ApiKey
 
 ### HTTP请求:
 
@@ -1202,7 +1202,7 @@ HTTP常见的错误码如下：
 ## <span id="4">获取用户全部成交V2</span>
 获取全部成交记录 V2 版本
 
-#### 新接口的 API域名地址 `https://futures.coinstore.com`  调用支持ApiKey与Token
+#### 新接口的 API域名地址 `https://futures.coinstore.com`  调用支持ApiKey
 
 
 ### HTTP请求:

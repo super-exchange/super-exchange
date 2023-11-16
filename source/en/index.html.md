@@ -57,11 +57,10 @@ The services provided by Coinstore API will be continuously updated here, so sta
 
 # Quick Start
 
-## Access Preparation
+## Create APIkey
 
 To use API, please log into the webpage first, create an API key through [User Center] - [API Managment], and then develop and trade according to the details of this documentation.
-
-You can click 'https://www.coinstore.com/#/user/bindAuth/ManagementAPI' to create an API Key.
+[You can click here to create an API Key]: https://www.coinstore.com/#/user/bindAuth/ManagementAPI
 
 Each user can create 5 groups of API Keys, and each group of API Keys can bind 5 different IP addresses. Once an API key binds an address, the API interface can only be called by using the API key from the bound IP address. For security reasons, it is strongly recommended that you bind the corresponding IP address for API key.
 
@@ -109,6 +108,17 @@ Private interface can be used for trading management. Every private request must
 
 To ensure the stability of API service, it is recommended to access using Japanese AWS cloud server. If the client server in Chinese mainland is used, it would be difficult to guarantee the stability of the connection.
 
+## Rate Limit
+
+**Same IP**
+
+`A maximum of 300 requests is allowed every 3 seconds for the same IP.`
+
+**Same User**
+
+`For the same user, a maximum of 120 requests is allowed every 3 seconds.`
+
+## <span id="a4">签名认证</span>
 
 ## <span id="a4"> Signature Authentication </span>
 
@@ -189,6 +199,8 @@ Example 3: Mixed Request
 **Python Example**
 
  https://coinstore-sg-encryption.s3.ap-southeast-1.amazonaws.com/filesUpload/ex1/public/coinstore.py
+
+ `It is recommended to use Python SDK version 3.9,using a version lower than 3.9 may lead to compatibility issues or inaccuracies in signature calculation.`
 
 
 # API Access Instructions
@@ -284,9 +296,9 @@ Get currency & spot information
 | code                | int       | 0：success, other: failure      |
 | message             | String    | Error message           |
 | data                | Object [] | Transaction data          |
-| - symbolId          | Long      | Currency id           |
-| - symbolCode        | String    | Currency name         |
-| - tradeCurrencyCode | String    | Base currency, e.g. BTC inBTC-USDT           |
+| - symbolId          | Long      | Symbol  id           |
+| - symbolCode        | String    | Symbol name         |
+| - tradeCurrencyCode | String    | Base currency, e.g. BTC in BTC-USDT           |
 | - quoteCurrencyCode | String    | Quote currency, e.g. USDT in BTC-USDT            |
 | - openTrade         | boolean   |open trade:true, off trade:false |
 | - onLineTime        | Long      |Listing time, Unix timestamp format in milliseconds, e.g. 1597026383085 |
@@ -299,7 +311,42 @@ Get currency & spot information
 | - makerFee         | String   |Maker fee |
 | - takerFee         | String   |Taker fee |
 
-> 响应
+
+> python 
+
+```python
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/v2/public/config/spot/symbols"
+api_key=b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+   'X-CS-APIKEY': api_key,
+ 'X-CS-SIGN': signature,
+ 'X-CS-EXPIRES': str(expires),
+ 'exch-language': 'en_US',
+ 'Content-Type': 'application/json',
+ 'Accept': '*/*',
+ # 'Host': 'https://api.coinstore.com',
+ 'Connection': 'keep-alive'
+}
+response = requests.request("POST", url, headers=headers, data=payload)
+print(response.text)
+```
+
+> response
 
 ```json
 {
@@ -336,6 +383,39 @@ Get user assets balance
 ### HTTP Request: 
 - POST /spot/accountList
 
+> python 
+
+```python
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/spot/accountList"
+api_key=b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+   'X-CS-APIKEY': api_key,
+ 'X-CS-SIGN': signature,
+ 'X-CS-EXPIRES': str(expires),
+ 'exch-language': 'en_US',
+ 'Content-Type': 'application/json',
+ 'Accept': '*/*',
+ # 'Host': 'https://api.coinstore.com',
+ 'Connection': 'keep-alive'
+}
+response = requests.request("POST", url, headers=headers, data=payload)
+print(response.text)
+```
 
 > Response 
 
@@ -365,9 +445,11 @@ Get user assets balance
 
 ### Request Parameters
 
-|    code    |  type   | required |       comment        |
-| ---------- | ------- | -------- | -------------------- |
-|  |  |  |  |
+| param         | type   | required | comment      |
+|---------------|--------|----------|--------------|
+| symbolCodes   | array  | no | Currency pair code |
+| symbolIds     | array  | no | Currency pair ID   |
+
 
 ### Response Data
 
@@ -387,7 +469,7 @@ Get user assets balance
 
 ## <span id="2">Fund transfer</span>
 
-#### Currently supporting contract<->spot transfer, API domain name address `https://futures.api.coinstore.com/api`  Call support for ApiKey and Token
+#### Currently supporting contract<->spot transfer, API domain name address `https://futures.api.coinstore.com/api`  Call support for ApiKey
 
 ### HTTP Request:
 - POST /common/account/transfer
@@ -457,6 +539,30 @@ Get current order
 
 - GET /trade/order/active
 
+> python 
+
+```python
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests 
+url = "https://api.coinstore.com/api/trade/order/active"
+api_key=b'your api_key'
+secret_key = b'your secret_key' 
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = ''
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {'X-CS-APIKEY':api_key,'X-CS-SIGN':signature,'X-CS-EXPIRES':str(expires),'Content-Type':'application/json'}
+response = requests.request("GET", url, headers=headers, data=payload)
+print(response.text)
+```
 
 > Response
 
@@ -523,12 +629,38 @@ Get current order
 
 Get current order v2 version
 
-#### The new interface API domain name address `https://api.coinstore.com`  Call support for ApiKey and Token
+#### The new interface API domain name address `https://api.coinstore.com`  Call support for ApiKey
 
 
 ### HTTP Request:
 
 - GET /api/v2/trade/order/active
+
+
+> python 
+
+```python
+import hashlib
+import hmac
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/v2/trade/order/active"
+api_key=b'your api_key'
+secret_key = b'your secret_key' 
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = 'symbol=btcusdt'
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {'X-CS-APIKEY':api_key,'X-CS-SIGN':signature,'X-CS-EXPIRES':str(expires),'Content-Type':'application/json'}
+response = requests.request("GET", url, headers=headers, data=payload)
+print(response.text)
+```
+
 
 
 > Response
@@ -600,6 +732,35 @@ Get all trading records
 ### HTTP Request: 
 - GET /trade/match/accountMatches
 
+
+> python 
+
+```python
+import hashlib
+import hmac
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/trade/match/accountMatches?symbol=tipusdt"
+api_key=b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time()* 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = 'symbol=tipusdt'
+payload=payload.encode("utf-8")
+signature = hmac.new(key,payload, hashlib.sha256).hexdigest()
+headers = {
+   'X-CS-APIKEY': api_key,
+ 'X-CS-SIGN': signature,
+ 'X-CS-EXPIRES': str(expires),
+ 'Content-Type': 'application/json'
+}
+response = requests.request("GET", url, headers=headers)
+print(response.text)
+```
 
 > Response
 
@@ -686,6 +847,31 @@ Cancel orders
 }
 ```
 
+> python 
+
+```python
+import hashlib
+import hmac
+import math
+import time
+import requests
+import json
+url = "https://api.coinstore.com/api/trade/order/cancel"
+api_key=b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({"symbol":"btcusdt","orderId":1782425964251297})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {'X-CS-APIKEY':api_key,'X-CS-SIGN':signature,'X-CS-EXPIRES':str(expires),'Content-Type':'application/json'}
+response = requests.request("POST", url, headers=headers, data=payload)
+print(response.text)
+```
+
 > Response
 
 ```json
@@ -730,6 +916,43 @@ Cancel orders
 }
 ```
 
+
+> python 
+
+```python
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/trade/order/cancelAll"
+api_key=b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+  "symbol": "BTCUSDT"
+ })
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+   'X-CS-APIKEY': api_key,
+ 'X-CS-SIGN': signature,
+ 'X-CS-EXPIRES': str(expires),
+ 'exch-language': 'en_US',
+ 'Content-Type': 'application/json',
+ 'Accept': '*/*',
+ # 'Host': 'https://api.coinstore.com',
+ 'Connection': 'keep-alive'
+}
+response = requests.request("POST", url, headers=headers, data=payload)
+print(response.text)
+```
+
 > Response
 
 ```json
@@ -769,6 +992,49 @@ Create order
 	"timestamp": 1642407805168
 }
 ```
+
+
+> python 
+
+```python
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/trade/order/place"
+api_key=b'your api_key'
+secret_key = b'your secret key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+    "ordPrice": "30000",
+ "ordQty": "1",
+ # "clOrdId": "8vdpfHC0LmhojVIffOlkBc9bV9992",
+ "symbol": "BTCUSDT",
+ "side": "BUY",
+ "ordType": "LIMIT"
+ })
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+   'X-CS-APIKEY': api_key,
+ 'X-CS-SIGN': signature,
+ 'X-CS-EXPIRES': str(expires),
+ 'exch-language': 'en_US',
+ 'Content-Type': 'application/json',
+ 'Accept': '*/*',
+ # 'Host': 'https://api.coinstore.com',
+ 'Connection': 'keep-alive'
+}
+response = requests.request("POST", url, headers=headers, data=payload)
+print(response.text)
+```
+
 
 > Response
 
@@ -839,6 +1105,47 @@ Batch ordering
 }
 ```
 
+
+> python 
+
+```python
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/trade/order/placeBatch"
+api_key=b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+    "symbol":"BTCUSDT",
+ "orders":[
+        {"side":"BUY","ordType":"LIMIT","ordPrice":28000,"ordQty":"2"},
+ {"side":"BUY","ordType":"LIMIT","ordPrice":30000,"ordQty":"1"}],
+"timestamp":expires})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+   'X-CS-APIKEY': api_key,
+ 'X-CS-SIGN': signature,
+ 'X-CS-EXPIRES': str(expires),
+ 'exch-language': 'en_US',
+ 'Content-Type': 'application/json',
+ 'Accept': '*/*',
+ # 'Host': 'https://api.coinstore.com',
+ 'Connection': 'keep-alive'
+}
+response = requests.request("POST", url, headers=headers, data=payload)
+print(response.text)
+```
+
+
 > Response
 
 ```json
@@ -904,6 +1211,42 @@ Batch cancellation according to order id.
 }
 ```
 
+
+> python 
+
+```python
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/trade/order/cancelAll"
+api_key=b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({"symbol": "BTCUSDT"})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+   'X-CS-APIKEY': api_key,
+ 'X-CS-SIGN': signature,
+ 'X-CS-EXPIRES': str(expires),
+ 'exch-language': 'en_US',
+ 'Content-Type': 'application/json',
+ 'Accept': '*/*',
+ # 'Host': 'https://api.coinstore.com',
+ 'Connection': 'keep-alive'
+}
+response = requests.request("POST", url, headers=headers, data=payload)
+print(response.text)
+```
+
+
 > Response
 
 ```json
@@ -942,6 +1285,37 @@ Batch cancellation according to order id.
 
 ## <span id="14">Get order information </span>
 Get order information
+
+
+> python 
+
+```python
+import hashlib
+import hmac
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/trade/order/orderInfo?ordId=1780715084580128"
+api_key=b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time()* 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = 'ordId=1780715084580128'
+payload=payload.encode("utf-8")
+signature = hmac.new(key,payload, hashlib.sha256).hexdigest()
+headers = {
+   'X-CS-APIKEY': api_key,
+ 'X-CS-SIGN': signature,
+ 'X-CS-EXPIRES': str(expires),
+ 'Content-Type': 'application/json'
+}
+response = requests.request("GET", url, headers=headers)
+print(response.text)
+```
+
 
 > Response
 
@@ -1011,13 +1385,42 @@ Get order information
 ## <span id="14">Get order information V2 </span>
 Get order information v2
 
-#### The new interface API domain name address `https://api.coinstore.com`  Call support for ApiKey and Token
+#### The new interface API domain name address `https://api.coinstore.com`  Call support for ApiKey
 
 
 ### HTTP Request:
 
 - GET /api/v2/trade/order/orderInfo
 
+
+> python 
+
+```python
+import hashlib
+import hmac
+import math
+import time
+import requests
+url = "https://api.coinstore.com/api/v2/trade/order/orderInfo?ordId=1780715084580128"
+api_key=b'da2b7ed9aeee00744193d251bc99a09c'
+secret_key = b'28fd41afcb4bdcb752634b1549ad9aa7'
+expires = int(time.time()* 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = 'ordId=1780715084580128'
+payload=payload.encode("utf-8")
+signature = hmac.new(key,payload, hashlib.sha256).hexdigest()
+headers = {
+   'X-CS-APIKEY': api_key,
+ 'X-CS-SIGN': signature,
+ 'X-CS-EXPIRES': str(expires),
+ 'Content-Type': 'application/json'
+}
+response = requests.request("GET", url, headers=headers)
+print(response.text)
+```
 
 > Response
 
@@ -1466,9 +1869,6 @@ the server supports two forms of end pong response, namely websocket pong frame 
 
 1. https://tools.ietf.org/html/rfc6455#section-5.5.3 
 
-2. https://developer.mozilla.org/zh-CN/docs/Web/API/WebSockets_API/Writing_WebSocket_servers#Pings%E5%92%8CPongs%EF%BC%9AWebSockets%E7%9A%84%E5%BF%83%E8%B7%B3 
-
-
 
 > Example
 
@@ -1630,7 +2030,7 @@ $>wscat -c 'ws://127.0.0.1:8080/s/ws'
 ### Stream Name
  `<symbol>@trade`
  
- eg: `88066@trade`
+ eg: `4@trade`
 ### param
 `param": {"size":2}`
 
@@ -1670,7 +2070,7 @@ K-line stream pushes the requested k-line type (the latest k-line) every second.
 ### Stream Name
 `<symbol>@kline@<interval>`
 
-eg: `88066@kline@min_1`
+eg: `4@kline@min_1`
 
 
 ### interval optional values
@@ -1763,7 +2163,7 @@ Streamlined ticker information in the last 24 hours refreshed by Symbol
 ```
 
 ### Stream Name
-`<symbol>@ticker`, eg:  `88066@ticker`
+`<symbol>@ticker`, eg:  `4@ticker`
 
 
 ## **Ticker information of all symbols in the whole market**
@@ -1844,250 +2244,24 @@ Push limited level depth information every second or every 100ms.
 ### Stream Names
 `<symbol>@depth@<levels>`
  
- eg:  `88066@depth@50`
+ eg:  `4@depth@50`
 
 ### levels optional values
 Levels indicates the levels of the buy or sell orders, and 5/10/20/50/100 level can be selected.
 
+# Error Code
 
+### error Code: 
 
+| Code                | Comment                                    |
+| ------------------- | ------------------------------------------ |
+| unauthorized 1401  | Request IP is not in the IP whitelist      |
+| signature error 3005 | Signature generation error                 |
+| symbol not found 3011 | The trading pair is not listed             |
+| account-insufficient 3113 | Insufficient account balance            |
+| duplicate-order 3011 | Duplicate order                            |
+| order-not-found 3103 | Order not found or does not belong to the current account |
 
-## **Login**
-
-Specify subscription data when logging in
-
-> for example fetch asset info   
-
-```lang=json   
-{
-    "op":"login",
-    "channel":[
-        "spot_asset"
-    ],
-    "auth":{
-        "token":"****9e8eaf9fe9f7558661232aa9****","type":"apikey","expires":1692942248236,"signature":"****2e0c936b279a6dfbe1696dd217152f82e73413bc681f57f0eced8ebc****"
-
-    },
-    "params":{
-    }
-}   
-```   
-
-> for example fetch order info
-
-```lang=json   
-{
-    "op":"login",
-    "channel":[
-        "spot_order"
-    ],
-    "auth":{
-        "token":"****9e8eaf9fe9f7558661232aa9****","type":"apikey","expires":1692942248236,"signature":"****2e0c936b279a6dfbe1696dd217152f82e73413bc681f57f0eced8ebc****"
-
-    },
-    "params":{
-    }
-}   
-```
-
-
-### **method of signature generation in JAVA**
-
-> example for java
-
-```lang=json   
-    public static void main(String[] args) {
-        try {
-            Mac hmacSha256 = Mac.getInstance("HmacSHA256");
-            String secret = "****6fea34cd140315552a76ae6c****";
-            long timeMillis = 1692942248236L; // Replace with your desired fixed timestamp in milliseconds
-            String payload = "" + timeMillis + "";
-            String time = String.valueOf(timeMillis / 30_000); // Replace with your desired fixed timestamp divided by 30,000
-            System.out.println("time==" + timeMillis);
-            hmacSha256.init(new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), "HmacSHA256"));
-            byte[] hash = hmacSha256.doFinal(time.getBytes(StandardCharsets.UTF_8));
-            String key = Hex.encodeHexString(hash);
-            hmacSha256.reset();
-            hmacSha256.init(new SecretKeySpec(key.getBytes(), "HmacSHA256"));
-            hash = hmacSha256.doFinal(payload.getBytes(StandardCharsets.UTF_8));
-            String sign = Hex.encodeHexString(hash);
-            System.out.println("sign==" + sign);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }       
-```   
-
-
-### **method of signature generation in Python**  
-
-> example for python
-
-```lang=json   
-    import binascii
-    import hashlib
-    import hmac
-    import time
-    
-    def main():
-        secret = '****6fea34cd140315552a76ae6c****'
-        timeMillis = int(time.time() * 1000)  # Get current timestamp in milliseconds
-        payload = str(timeMillis)
-        timeInterval = int(timeMillis / 30000)  # Calculate the time interval
-    
-        print("time==", timeMillis)
-    
-        hash = hmac.new(bytes(secret, 'utf-8'), bytes(str(timeInterval), 'utf-8'), hashlib.sha256).digest()
-        key = binascii.hexlify(hash).decode()
-    
-        hash = hmac.new(bytes(key, 'utf-8'), bytes(payload, 'utf-8'), hashlib.sha256).digest()
-        sign = binascii.hexlify(hash).decode()
-    
-        print("sign==", sign)
-    
-    if __name__ == "__main__":
-        main()       
-```   
-
-### **websocket demo for Python**
-
-> demo
-
-```python   
-import binascii
-import hashlib
-import hmac
-import json
-import websocket
-import threading
-
-def main():
-    public = 'replace your apikey'
-    secret = 'replace your secretkey'
-    timeMillis = 1695268668648  # Replace with your timestamp in milliseconds
-    payload = str(timeMillis)
-    time = str(int(timeMillis / 30_000))
-    print("apikey==",public)
-    print("time==", timeMillis)
-
-    hash = hmac.new(bytes(secret, 'utf-8'), bytes(time, 'utf-8'), hashlib.sha256).digest()
-    key = binascii.hexlify(hash).decode()
-
-    hash = hmac.new(bytes(key, 'utf-8'), bytes(payload, 'utf-8'), hashlib.sha256).digest()
-    sign = binascii.hexlify(hash).decode()
-
-    print("sign==", sign)
-    return public, timeMillis, sign
-
-# subscription
-
-fixed_request_data = {
-    "op": "login",
-    "channel": ["spot_asset"],
-    "auth": {
-        "token": '',  # Placeholder for the token
-        "type": "apikey",
-        "expires": 0,  # Placeholder for the expiration timestamp
-        "signature": ''  # Placeholder for the signature
-    },
-    "params": {
-        "symbolIds": []
-    }
-}
-
-def on_message(ws, message):
-    print("Received:", message)
-
-def on_error(ws, error):
-    print("Error:", error)
-
-def on_close(ws, close_status_code, close_msg):
-    print("Connection closed")
-
-def on_open(ws):
-    public, timeMillis, sign = main()  # Get values from main function
-    fixed_request_data["auth"]["token"] = public
-    fixed_request_data["auth"]["expires"] = timeMillis
-    fixed_request_data["auth"]["signature"] = sign
-
-    def run(*args):
-        request_json = json.dumps(fixed_request_data)
-        ws.send(request_json)
-
-    threading.Thread(target=run).start()
-
-if __name__ == "__main__":
-    ws = websocket.WebSocketApp("wss://ws.coinstore.com/s/ws",
-                                on_message=on_message,
-                                on_error=on_error,
-                                on_close=on_close)
-    ws.on_open = on_open
-    ws.run_forever()
-    
-```
-
-## **Account**
-
-Stream Name: `<currency>@account`, or `!@account` all currency
-
-```lang=json
-{
-    "accountId": 12,
-    "currency": "BTC",
-    "frozen": "21.03",
-    "available": "3128.29",
-    "timestamp": 1602493840  // unit: s
-}
-
-```
-
-## **Closing order**
-
-Stream Name: `<symbol>@order`, or `!@order` all symbol's
-
-```lang=json
-{
-    // increment
-    
-    "version": 12,
-
-    // order base info, never change
-
-    "accountId": 1,
-    "ordId": 12,
-    "symbol": "BTCUSDT",
-    "side": "BUY",
-    "ordType": "LIMIT",
-    "timeInForce": "GTC",
-    "ordPrice": "128.21",
-    "ordQty": "11.21",
-    "ordAmt": "231.2",
-
-    // order state
-    "ordState": "PARTIAL_FILLED",
-
-    // sum every trade time
-
-    "execQty": "12.2",
-    "execAmt": "312.12",
-    "remainingQty": "1.2",
-
-    // current trade info,  present meaning values when `matchQty` is bigger than 0
-
-    "matchId": 12,
-    "tradeId": 123,
-    "matchRole": "TAKER",
-    "matchQty": "1.9",
-    "matchAmt": "390.29",
-    "selfDealingQty": "1.9",
-    "actualFeeRate": "0.002",
-    "feeCurrencyId": 12,
-    "fee": 0.21,
-
-    "timestamp": 1602493840 // unit: s
-}
-```
 
 ## **Dictionary**
 
