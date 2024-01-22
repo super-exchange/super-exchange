@@ -2182,14 +2182,24 @@ levels表示几档买卖单信息, 可选 5/10/20/50/100档
 
 ### 错误码: 
 
-| Code               | Comment                                |
-| ------------------ | -------------------------------------- |
-| unauthorized 1401 | 请求ip不在IP白名单中                   |
-| signature error 3005 | 签名生成错误                         |
-| symbol not found 3011 | 该币对没有上线                      |
-| account-insufficient 3113 | 账户余额不足                     |
-| duplicate-order 3011 | 重复订单                             |
-| order-not-found 3103 | 订单未找到或者该订单不属于当前账号   |
+| Code                                  | Comment                                |
+|---------------------------------------| -------------------------------------- |
+| signature-failed 401                  | 主账号冻结子账号登录权限                   |
+| signature-failed 401                  | 子账号被删除                   |
+| signature-failed 401                  | Api key 错误                   |
+| unauthorized 1401                     | 请求ip不在IP白名单中                   |
+| unauthorized 1401                     | 签名失败                   |
+| unauthorized 1401                     | 用户登录 Token 失效                   |
+| signature error 3005                  | 签名生成错误                         |
+| symbol not found 3011                 | 该币对没有上线                      |
+| part-trade-limit 3012                 | 您已被限制交易当前现货币对，如有疑问请咨询客服，给您造成不便敬请谅解。                      |
+| trade-limit 3013                      | 您暂时不具备币币交易资质，如有疑问请咨询客服，给您造成不便敬请谅解。                      |
+| user-trade-limit 3014                 | 当前子账号暂时不具备币币交易资质                      |
+| user-part-trade-limit 3015            | 当前子账号已被限制交易当前现货币对                      |
+| account-insufficient 3113             | 账户余额不足                     |
+| duplicate-order 3111                  | 重复订单                             |
+| order-not-found 3103                  | 订单未找到或者该订单不属于当前账号   |
+| sub-user-operator-business-error 6001 | 子账号不允许参与该业务   |
 
 
 

@@ -2058,3 +2058,24 @@ Symbol value in the data format is: contract ID
 |	feeRate	|	string	|	fee rate	|
 |	contractUnit	|	string	|	contract unit	|
 |	orderStatus	|	int	|	order status 0-undeclared, 1-declaring, 2-declared but not filled, 3-partially filled, 4-fully filled, 5-partially canceled, 6-fully canceled, 7-canceling, 8-failure, 11-buffer the orders higher than limit, 12-buffer the orders lower than limit	|
+
+
+# Error Code
+
+### error Code:
+
+| Code                                  | Comment                                    |
+|---------------------------------------| ------------------------------------------ |
+| signature-failed 401                  | Main account freezes sub-account login access                   |
+| signature-failed 401                  | Sub-account has been deleted                   |
+| signature-failed 401                  | Api key error                   |
+| unauthorized 1401                     | Request IP is not in the IP whitelist      |
+| unauthorized 1401                     | Signature failure                   |
+| unauthorized 1401                     | User login Token expired                   |
+| signature error 3005                  | Signature generation error                 |
+| symbol not found 3011                 | The trading pair is not listed             |
+| trade-limit 3013                      | You do not currently have the qualification for contract trading. If you have any questions, please contact customer support. We apologize for any inconvenience this may cause.                      |
+| user-trade-limit 3014                 | The current sub-account temporarily lacks futures trading qualifications.                      |
+| user-part-trade-limit 3015            | The current sub-account is restricted from trading the current futures currency pairs.                      |
+| duplicate-order 3111                  | Duplicate order                            |
+| sub-user-operator-business-error 6001 | Sub-account is not allowed to participate in this business   |

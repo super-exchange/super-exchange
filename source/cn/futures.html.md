@@ -2025,3 +2025,24 @@ wss://ws-futures.coinstore.com/socket.io/?EIO=3&transport=websocket
 |	contractUnit	|	string	|	合约单位	|
 |	orderStatus	|	int	|	委托状态 0-未申报,1-正在申报,2-已申报未成交,3-部分成交,4-全部成交,5-部分撤单,6-全部撤单,7-撤单中,8-失效,11-缓存高于条件的委托,12-缓存低于条件的委托	|
 
+
+
+# 错误码
+
+### 错误码:
+
+| Code                                  | Comment                                |
+|---------------------------------------| -------------------------------------- |
+| signature-failed 401                  | 主账号冻结子账号登录权限                   |
+| signature-failed 401                  | 子账号被删除                   |
+| signature-failed 401                  | Api key 错误                   |
+| unauthorized 1401                     | 请求ip不在IP白名单中                   |
+| unauthorized 1401                     | 签名失败                   |
+| unauthorized 1401                     | 用户登录 Token 失效                   |
+| signature error 3005                  | 签名生成错误                         |
+| symbol not found 3011                 | 该币对没有上线                      |
+| trade-limit 3013                      | 您暂时不具备合约交易资质，如有疑问请咨询客服，给您造成不便敬请谅解。                      |
+| user-trade-limit 3014                 | 当前子账号暂时不具备合约交易资质                      |
+| user-part-trade-limit 3015            | 当前子账号已被限制交易当前合约币对                      |
+| duplicate-order 3111                  | 重复订单                             |
+| sub-user-operator-business-error 6001 | 子账号不允许参与该业务   |

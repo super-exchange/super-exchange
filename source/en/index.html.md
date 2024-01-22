@@ -2253,14 +2253,24 @@ Levels indicates the levels of the buy or sell orders, and 5/10/20/50/100 level 
 
 ### error Code: 
 
-| Code                | Comment                                    |
-| ------------------- | ------------------------------------------ |
-| unauthorized 1401  | Request IP is not in the IP whitelist      |
-| signature error 3005 | Signature generation error                 |
-| symbol not found 3011 | The trading pair is not listed             |
-| account-insufficient 3113 | Insufficient account balance            |
-| duplicate-order 3011 | Duplicate order                            |
-| order-not-found 3103 | Order not found or does not belong to the current account |
+| Code                                  | Comment                                    |
+|---------------------------------------| ------------------------------------------ |
+| signature-failed 401                  | Main account freezes sub-account login access                   |
+| signature-failed 401                  | Sub-account has been deleted                   |
+| signature-failed 401                  | Api key error                   |
+| unauthorized 1401                     | Request IP is not in the IP whitelist      |
+| unauthorized 1401                     | Signature failure                   |
+| unauthorized 1401                     | User login Token expired                   |
+| signature error 3005                  | Signature generation error                 |
+| symbol not found 3011                 | The trading pair is not listed             |
+| part-trade-limit 3012                 | You are currently restricted from trading this spot currency pair. If you have any questions, please contact customer support. We apologize for any inconvenience this may cause.                      |
+| trade-limit 3013                      | You do not currently have the qualification for spot trading. If you have any questions, please contact customer support. We apologize for any inconvenience this may cause.                      |
+| user-trade-limit 3014                 | The current sub-account temporarily lacks spot trading qualifications                      |
+| user-part-trade-limit 3015            | The current sub-account is restricted from trading the current spot currency pair                      |
+| account-insufficient 3113             | Insufficient account balance            |
+| duplicate-order 3111                  | Duplicate order                            |
+| order-not-found 3103                  | Order not found or does not belong to the current account |
+| sub-user-operator-business-error 6001 | Sub-account is not allowed to participate in this business   |
 
 
 ## **Dictionary**
