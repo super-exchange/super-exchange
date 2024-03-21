@@ -364,6 +364,118 @@ print(response.text)
     ]
 }
 ```
+## <span id="1">查询币种信息</span>
+
+获取币种详细信息
+
+### HTTP请求:
+- GET /fi/v1/common/currency
+
+### 请求参数
+
+| param | type | required | comment |
+|-------|------|----------|---------|
+|   currencyCode    | string   | Y        | 币对Code  |
+
+> 请求
+
+```json
+{
+  "currencyCode":"ETH"
+}
+```
+
+### 响应数据
+
+| code                | type    | comment       |
+|---------------------|---------|---------------|
+| code                | int     | 0：成功，其他失败     |
+| message             | String  | 错误信息          |
+| data                |         | 业务数据          |
+|-	name |string| 币种名称|
+|-   code |string| 币种代码|
+|-   showPrecision |string| 币种精度|
+|-   chainDataList |Object []| 链信息|
+|--		currencyCode |string| 币种code|
+|--		chainName |string| 链名称|
+|--    chainProtocol  |string|  链协议|
+|--		contractAddress |string|币种合约地址|
+|--		depositOpen |int|是否开放充值，0关闭充值，1开放充值|
+|--		withdrawOpen |int|是否开启提现，0关闭提现，1开启提现|
+|--		withdrawFee |string|提币手续费|
+|--		withdrawMin |string|最小提币数量|
+|--		withdrawMax |string|最大提币数量|
+|--		depositMin |string|最小充币数量|
+|--		withdrawFeePlatform |string|提币平台手续费比例|
+|--		burningState |int|是否为燃烧币 是1 否0|
+|--		withdrawFeeOnChain |string|提币链上燃烧比例|
+|--		tagType |int|是否需要标签 0不需要 1需要 2可选|
+|--		withdrawFeeMin |string|提现最少手续费|
+
+> python
+
+```python
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+
+# api查询币种信息
+
+url = "https://api.coinstore.com/api/fi/v1/common/currency?currencyCode=ETH"
+api_key = b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = "currencyCode=ETH"
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+
+headers = {
+    'X-CS-APIKEY': api_key,
+    'X-CS-SIGN': signature,
+    'X-CS-EXPIRES': str(expires),
+    'Content-Type': 'application/json'
+}
+response = requests.request("GET", url, headers=headers)
+print(response.text)
+```
+> 响应
+
+```json
+{
+  "code": "0",
+  "message": "Success",
+  "data": {
+    "name": "eth",
+    "code": "eth",
+    "showPrecision": 6,
+    "chainDataList": [
+      {
+        "currencyCode": "eth",
+        "chainName": "eth",
+        "contractAddress": "23412374127384ghgdwq",
+        "depositOpen": 0,
+        "withdrawOpen": 1,
+        "withdrawFee": "100.00000000",
+        "withdrawMin": "1.00000000",
+        "withdrawMax": "0.00000000",
+        "depositMin": "1.00000000",
+        "withdrawFeePlatform": "0.00000000",
+        "burningState": 0,
+        "withdrawFeeOnChain": "0.00000000",
+        "tagType": 0,
+        "withdrawFeeMin": "0.00000000"
+      }
+    ]
+  }
+}
+```
 
 # 账户相关
 
@@ -455,35 +567,605 @@ print(response.text)
 |- type | Decimal |账户状态 1:可用 4:冻结 |
 
 # 资金相关
-## <span id="2">资金划转</span>
-
-#### 目前支持合约<一>现货划转, API域名地址 `https://futures.api.coinstore.com/api`  调用支持ApiKey
+## <span id="2">获取充币地址</span>
+获取充币地址信息
 
 ### HTTP请求:
-- POST /common/account/transfer
+- POST /fi/v3/asset/deposit/do
 
 ### 请求参数
 
-|       param        |  type  |                  required                       |comment|
+|  code |  type  |  required  |comment|
 | ---- | ----- |---------- |-----|
-| amount | String      | Y|  划转数量, 数量不正确返回错误码 `102150400`        |
-| currencyCode | String      | Y|  划转币种，如`USDT`, 币种不正确或不支持返回错误码 `101040502` 目前支持划转的币种: `USDT`、`BOBC`、`DREAMS`        |
-| clientId | String      | N|  客户自定义ID字母（区分大小写）与数字的组合，可以是纯字母、纯数字且长度要在1-32位之间。 格式不符合要求返回错误码 `101040502`       |
-| transferType | String      | Y|  划转方向, 合约 -> 现货 : `future-to-spot`, 现货 -> 合约 : `spot-to-future`, 非次两种类型返回错误码 `101040502`     |
+|currencyCode	|string|	Y|	币种code|
+|chain	|string|	Y|	链名称|
 
-
-> 请求示例
+> 请求
 
 ```json
 {
-    "currencyCode":"USDT",
-    "amount":"5",
-    "transferType":"spot-to-future",
-    "clientId":"SFT1679454569469"
+  "currencyCode": "USDTTRX",
+  "chain": "TRX"
 }
 ```
 
+### 响应数据
 
+|       code        |  type  |                  comment                       |
+| ---- | ----- |---------- |
+|code	|int|	0：成功，其他失败|
+|message	|string|	错误信息|
+|data	|object|	|
+|-	address	|string|	地址|
+|-	tag	|string|	标签|
+|-	depositMin	|string|	最小充币数量|
+
+> python
+
+```python
+python
+
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+
+url = "https://api.coinstore.com/api/fi/v3/asset/deposit/do"
+api_key = b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+    "currencyCode": "USDTTRX",
+    "chain": "TRX"
+})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+    'X-CS-APIKEY': api_key,
+    'X-CS-SIGN': signature,
+    'X-CS-EXPIRES': str(expires),
+    'exch-language': 'en_US',
+    'Content-Type': 'application/json',
+    'Accept': '*/*',
+    'Connection': 'keep-alive'
+}
+response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+print(response.text)
+```
+> 响应
+
+```json
+{
+  "code": "0",
+  "message": "Success",
+  "data": {
+    "address": "TW4……",
+    "tag": "",
+    "depositMin": 0.00010000
+  }
+}
+```
+
+## <span id="2">获取充币记录</span>
+获取用户充币记录
+
+### HTTP请求:
+- POST /fi/v3/asset/deposit/record/list
+
+### 请求参数
+
+|  code |  type  | required |comment|
+| ---- | ----- |----------|-----|
+|currencyCode |string| N        | 币种对|
+|startDate |string| N        | 起始时间 日期型字符串 格式"yyyy-MM-dd HH:mm:ss"等|
+|endDate |string| N        | 结束时间 日期型字符串 格式"yyyy-MM-dd HH:mm:ss"等|
+|fromId |long| N        | 从id开始查询，缺省从头开始|
+|limit |int| N        |  条数 默认500，最大1000|
+|externalId |string| N        | 外部id|
+|label |string| N        | 备注标签|
+
+
+> 请求
+
+```json
+{
+  "currencyCode": "",
+  "startDate": "2024-01-01",
+  "endDate": "2024-03-08",
+  "fromId": "",
+  "limit": "10",
+  "externalId": "",
+  "label": ""
+}
+
+```
+
+### 响应数据
+
+|       code        |  type  |                  comment                      |
+| ---- | ----- |--------- |
+|code	|type|	comment|
+|code	|int|	0：成功，其他失败|
+|message	|string|	错误信息|
+|data	| | |
+|	externalId |string| 外部id|
+|	label |string| 备注标签|
+|	withdrawList |Object[]|	业务数据|
+|--	 id	|long|	ID|
+|--	 symbol	|string|	币种|
+|--	 amount	|string|	金额|
+|--	 fee	|string|	手续费|
+|--	 createdAt	|string|	时间|
+|--	 status	|int|	提现状态: 0 未审核，1 审核通过，2 审核拒绝，3 支付中已经打币，4 支付失败，5 已完成，6 已撤销|
+|--	 explorer	|string|	区块链浏览器|
+|--	 txId	|string|	交易hash|
+|--	 addressTo	|string|	提币地址|
+|--	 chainName	|string|	链名称|
+|--	 chainProtocol	|string|	链协议|
+|--	 internalType	|int|	站内提币类型 0：非站内 1：站内|
+
+```python
+python
+
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+
+url = "https://api.coinstore.com/api/fi/v3/asset/deposit/record/list"
+api_key = b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+    "currencyCode": "USDT",
+    "startDate": "2024-03-01",
+    "endDate": "2024-03-08",
+    "fromId": "",
+    "limit": "10",
+    "externalId": "",
+    "label": ""
+})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+    'X-CS-APIKEY': api_key,
+    'X-CS-SIGN': signature,
+    'X-CS-EXPIRES': str(expires),
+    'exch-language': 'en_US',
+    'Content-Type': 'application/json',
+    'Accept': '*/*',
+    'Connection': 'keep-alive'}
+response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+print(response.text)
+
+```
+> 响应
+
+```json
+{
+  "code": "0",
+  "message": "Success",
+  "data": {
+    "depositList": [
+      {
+        "id": 38948,
+        "symbol": "doge",
+        "chainName": "doge",
+        "chainProtocol": "doge",
+        "amount": "10.61",
+        "createdAt": "2024-02-27 17:36:38",
+        "status": 1,
+        "explorer": "19ceb820c143ceae503cf6ce5a0c9064721f438099529d041026e062e99a0bdc8",
+        "txId": "9ceb820c143ceae503cf6ce5a0c9064721f438099529d041026e062e99a0bdc8",
+        "internalType": 0,
+        "lockAccount": false,
+        "noDepositMsg": null
+      }
+    ],
+    "externalId": null,
+    "label": null
+  }
+}
+```
+
+## <span id="2">获取提币记录</span>
+获取用户提币记录
+
+### HTTP请求:
+- POST /fi/v3/asset/withdraw/record/list
+
+### 请求参数
+
+|  code |  type  | required   |comment|
+| ---- | ----- |------------|-----|
+|param	|type| 	required	 |comment|
+|currencyCode |string| N          | 币种对|
+|startDate |string| N          | 起始时间|
+|endDate |string| N          | 结束时间|
+|fromId |long| N          |从id开始查询，缺省从头开始|
+|limit |int| N          |条数 默认500，最大1000|
+|externalId |string| N          | 外部id|
+|label |sring| N          | 标签|
+
+> 请求
+
+```json
+{
+  "currencyCode": "",
+  "startDate": "2024-03-01",
+  "endDate": "2024-03-08",
+  "fromId": "",
+  "limit": "10",
+  "externalId": "",
+  "label": ""
+}
+
+```
+
+### 响应数据
+
+|       code        |  type  |                  comment                      |
+| ---- | ----- |--------- |
+|code	|type|	comment|
+|code	|int|	0：成功，其他失败|
+|message	|String|	错误信息|
+|data|	|  |
+|	externalId |string| 外部id|
+|	label |string| 备注标签|
+|	depositList |Object []|	业务数据|
+|--	 id	|long|	ID|
+|--	 symbol	|string|	币种|
+|--	 chainName	|string|	链名|
+|--	 chainProtocol	|string|	链协议|
+|--	 amount	|string|	数量|
+|--	 createdAt	|string|	时间|
+|--	 status	|int|	充值状态: 0 未确认，1 已完成，2 异常，3审核中，4驳回|
+|--	 explorer	|string|	区块浏览器|
+|--	 txId	|string|	交易hash|
+|--	 internalType	|string|	站内充币类型 0：非站内 1：站内|
+|--	 lockAccount	|boolean|	是否锁定|
+
+```python
+python
+
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+
+url = "https://api.coinstore.com/api/fi/v3/asset/withdraw/record/list"
+api_key = b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+    "currencyCode": "",
+    "startDate": "2024-01-01",
+    "endDate": "2024-03-08",
+    "fromId": "",
+    "limit": "10",
+    "externalId": "",
+    "label": ""
+})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+    'X-CS-APIKEY': api_key,
+    'X-CS-SIGN': signature,
+    'X-CS-EXPIRES': str(expires),
+    'exch-language': 'en_US',
+    'Content-Type': 'application/json',
+    'Accept': '*/*',
+    'Connection': 'keep-alive'}
+response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+print(response.text)
+
+```
+> 响应
+
+```json
+{
+  "code": "0",
+  "message": "Success",
+  "data": {
+    "withdrawList": [
+      {
+        "id": 4886,
+        "symbol": "DOGE",
+        "amount": "0.3",
+        "fee": "0",
+        "createdAt": "2024-02-27 18:20:31",
+        "status": 5,
+        "showStatus": 2,
+        "explorer": "https://eth.btc.com/txinfo/",
+        "txId": "7b06acd90f839914f2676693927d994c264a0561893d3a5461a2a910d318acba",
+        "addressTo": "DFXm3XC49n3SBNqELip9LZHAo1nBaiDbdG",
+        "tag": null,
+        "chainName": "DOGE",
+        "chainProtocol": "DOGE",
+        "internalType": 0
+      }
+    ],
+    "externalId": null,
+    "label": null
+  }
+}
+```
+
+## <span id="2">提币</span>
+用户提币。普通子账户不支持提币;API只能提币到免认证地址/账户上，通过 WEB/APP 可以设置免认证地址。
+
+### HTTP请求:
+- POST /fi/v3/asset/doWithdraw
+
+### 请求参数
+
+|  code |  type  | required   |comment|
+| ---- | ----- |------------|-----|
+|param	|type|	required|	comment|
+|currencyCode |string| Y| 划转币种|
+|amount |string| Y| 划转金额|
+|address |string| Y| 提币地址|
+|tag |string| N| 标签 如需要|
+|chainType |string| Y| 链协议 币种详情中chainProtocol|
+
+
+> 请求
+
+```json
+{
+  "currencyCode": "USDT",
+  "amount": "1000",
+  "address": "TU4vEruvZwLLkSfV9bNw12EJTPvNr7Pvaa",
+  "tag": "698347",
+  "chainType": "TRX"
+}
+```
+
+### 响应数据
+
+|       code        |  type  |                  comment                      |
+| ---- | ----- |--------- |
+|code	|type|	comment|
+|code	|int|	0：成功，其他失败|
+|message	|String|	错误信息|
+|data|||	
+|--	 id	|Long|	提币ID|
+
+```python
+python
+
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+
+url = "https://api.coinstore.com/api/fi/v3/asset/doWithdraw"
+api_key = b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+    "currencyCode": "USDT",
+    "amount": "1000",
+    "address": "TU4vEruvZwLLkSfV9bNw12EJTPvNr7Pvaa",
+    "tag": "698347",
+    "chainType": "TRX"
+})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+    'X-CS-APIKEY': api_key,
+    'X-CS-SIGN': signature,
+    'X-CS-EXPIRES': str(expires),
+    'Content-Type': 'application/json'}
+response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+print(response.text)
+
+```
+> 响应
+
+```json
+{
+  "code": "0",
+  "message": "Success",
+  "data": {
+    "id": 4886
+  }
+}
+```
+
+## <span id="2">撤销提币</span>
+用户撤销提币
+
+### HTTP请求:
+- POST /fi/v3/asset/cancelWithdraw
+
+### 请求参数
+
+|  code |  type  | required   |comment|
+| ---- | ----- |------------|-----|
+|withdrawId |long| Y| 提现ID|
+
+
+> 请求
+
+```json
+{
+  "withdrawId": 4886
+}
+```
+
+### 响应数据
+
+|       code        | type   |                  comment                      |
+| ---- |--------|--------- |
+|code	| type   |	comment|
+|code	| int    |	0：成功，其他失败|
+|message	| String |	错误信息|
+|data	|        ||
+|--	 id	| Long   |	提币ID|
+
+```python
+python
+
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+
+url = "https://api.coinstore.com/api/fi/v3/asset/cancelWithdraw"
+api_key = b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+    "withdrawId": 4886
+})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+    'X-CS-APIKEY': api_key,
+    'X-CS-SIGN': signature,
+    'X-CS-EXPIRES': str(expires),
+    'exch-language': 'en_US',
+    'Content-Type': 'application/json',
+    'Accept': '*/*',
+    'Connection': 'keep-alive'}
+response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+print(response.text)
+
+```
+> 响应
+
+```json
+{
+  "code": "0",
+  "message": "Success",
+  "data": {
+    "id": 4886
+  }
+}
+```
+
+## <span id="2">划转资产</span>
+划转用户资产
+
+#### 目前支持合约<一>现货划转, API域名地址 `https://futures.api.coinstore.com/api`  调用支持ApiKey
+
+
+### HTTP请求:
+- POST /v1/future/transfer
+
+### 请求参数
+
+|  code |  type  | required   | comment                                                                                  |
+| ---- | ----- |------------|------------------------------------------------------------------------------------------|
+|param	|type|	required| 	comment                                                                                 |
+|type |string| Y| 0, 类型 划转类型 0：账户内划转（适用于母子账户APIKey） <br/>1：母账户转子账户(仅适用于母账户APIKey) <br/>2：子账户转母账户(仅适用于母账户APIKey) <br/>默认是0 |
+|currencyCode |string| Y| "USDT", 划转币种，如 USDT                                                                      |
+|amount |string| Y | 划转数量                                                                                     |
+|from |int| Y | 转出账户 1：币币账户 2：合约账户                                                                       |
+|to |int| Y | 转入账户 1：币币账户 2：合约账户                                                                       |
+|subAccount |string| N| 子账户登录名 当type为1/2时，该字段必填                                                                  |
+
+
+> 请求
+
+```json
+{
+  "type": "0",
+  "currencyCode": "USDT",
+  "amount": "1",
+  "from": "1",
+  "to": "2",
+  "subAccount": ""
+}
+```
+
+### 响应数据
+
+|       code        | type   |                  comment                      |
+| ---- |--------|--------- |
+|code	|type|	comment|
+|code	|int|	0：成功，其他失败|
+|message	|string|	错误信息|
+
+```python
+python
+
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+
+url = "https://api.coinstore.com/api/v1/future/transfer"
+api_key = b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+    "type": "0",
+    "currencyCode": "USDT",
+    "amount": "1",
+    "from": "1",
+    "to": "2",
+    "subAccount": ""
+})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+    'X-CS-APIKEY': api_key,
+    'X-CS-SIGN': signature,
+    'X-CS-EXPIRES': str(expires),
+    'exch-language': 'en_US',
+    'Content-Type': 'application/json',
+    'Accept': '*/*',
+    'Connection': 'keep-alive'}
+response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+print(response.text)
+
+```
+> 响应
+
+```json
+{
+  "code": "0",
+  "message": "Success"
+}
+```
 > 响应数据:失败参数示例:
 
 ```json
@@ -493,15 +1175,7 @@ print(response.text)
   "data": null
 }
 ```
-> 响应数据:成功:
 
-```json
-{
-    "code": 200,
-    "msg": null,
-    "data":0
-}
-```
 ### 其他响应code说明
 
 |       code       |  remark                      |
@@ -511,6 +1185,7 @@ print(response.text)
 | 101040502| 可能币种名称、自定义ID、划转类型不正确、划转币种不支持 |
 | 102150808| 可能余额不足、重复订单 |
 | 102150400| 失败 |
+
 
 
 # 订单相关

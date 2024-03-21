@@ -372,6 +372,119 @@ print(response.text)
     ]
 }
 ```
+## <span id="1">Basic information：</span>
+
+Get currency information
+
+### HTTPRequest:
+- GET /fi/v1/common/currency
+
+### Response Data
+
+| param | type | required | comment       |
+|-------|------|----------|---------------|
+|   currencyCode    | string   | Y        | Currency Code |
+
+> Request
+
+```json
+{
+  "currencyCode":"ETH"
+}
+```
+
+### response
+
+| code                | type     | comment       |
+|---------------------|----------|---------------|
+| code                | int      | 0：success, other: failure    |
+| message             | String   | Error message          |
+| data                |          |           |
+|-	name | String   | Ccurrency name|
+|-   code | String   | Currency code|
+|-   showPrecision | String   |    Lot size|
+|-   chainDataList | Object[] | Chain List|
+|--		currencyCode | String   | Currency code|
+|--		chainName | String   | Chain name|
+|--     chainProtocol  | String   |  Chain protocol|
+|--		contractAddress | String   | Currency contract address|
+|--		depositOpen  | String   | The availability to deposit from chain，0:not avaliable，1:avaliable|
+|--		withdrawOpen | String   | The availability to withdraw to chain，0:not avaliable，1:avaliable|
+|--		withdrawFee  | String   | The withdrawal fee|
+|--		withdrawMin  | String   | The minimum on-chain withdrawal amount of currency in a single transaction|
+|--		withdrawMax  | String   | The maximum amount of currency on-chain withdrawal in a single transaction|
+|--		depositMin  | String   | The minimum deposit amount of currency in a single transaction|
+|--		withdrawFeePlatform | String   | Platform fee rate|
+|--		burningState | String   | If the currency is burncurrency,0:no,1:yes|
+|--		withdrawFeeOnChain | String   | Burn rate on chain|
+|--		tagType   | String   |   Whether tag/memo information is required for withdrawal, 0:no required,1:required,2:optional|
+|--		withdrawFeeMin | String   | The minimum withdrawal fee|
+
+> python
+
+```python
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+
+# api get currency information
+
+url = "https://api.coinstore.com/api/fi/v1/common/currency?currencyCode=ETH"
+api_key = b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = "currencyCode=ETH"
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+
+headers = {
+    'X-CS-APIKEY': api_key,
+    'X-CS-SIGN': signature,
+    'X-CS-EXPIRES': str(expires),
+    'Content-Type': 'application/json'
+}
+response = requests.request("GET", url, headers=headers)
+print(response.text)
+```
+> response
+
+```json
+{
+  "code": "0",
+  "message": "Success",
+  "data": {
+    "name": "eth",
+    "code": "eth",
+    "showPrecision": 6,
+    "chainDataList": [
+      {
+        "currencyCode": "eth",
+        "chainName": "eth",
+        "contractAddress": "23412374127384ghgdwq",
+        "depositOpen": 0,
+        "withdrawOpen": 1,
+        "withdrawFee": "100.00000000",
+        "withdrawMin": "1.00000000",
+        "withdrawMax": "0.00000000",
+        "depositMin": "1.00000000",
+        "withdrawFeePlatform": "0.00000000",
+        "burningState": 0,
+        "withdrawFeeOnChain": "0.00000000",
+        "tagType": 0,
+        "withdrawFeeMin": "0.00000000"
+      }
+    ]
+  }
+}
+```
+
 
 # Account Related
 
@@ -467,36 +580,606 @@ print(response.text)
 
 # Funding Related
 
-## <span id="2">Fund transfer</span>
+## <span id="2">Get deposit address</span>
+Get deposit address information
 
-#### Currently supporting contract<->spot transfer, API domain name address `https://futures.api.coinstore.com/api`  Call support for ApiKey
+### HTTP request:
+- POST /fi/v3/asset/deposit/do
 
-### HTTP Request:
-- POST /common/account/transfer
+### Request Params
 
-### Request Parameters
+|  code |  type  |  required  |comment|
+| ---- | ----- |---------- |-----|
+|currencyCode	|string|	Y|	Currency code|
+|chain	|string|	Y|	Chain name|
 
-|       param        |  type  |                  required                       | comment                                                                                                                                                                                                                                        |
-| ---- | ----- |---------- |------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| amount | String      | Y| Transfer quantity, incorrect quantity, error code returned `102150400`                                                                                                                                                                         |
-| currencyCode | String      | Y| Transfer currency, such as `USDT`, incorrect currency or unsupported return error code `101040502` Currently, transfer currencies are supported: `USDT`、`BOBC`、`DREAMS`                                                                        |
-| clientId | String      | N| The combination of customer defined ID letters (case sensitive) and numbers can be pure letters, pure numbers, and the length should be between 1-32 bits. The format does not meet the requirements, and an error code is returned `101040502` |
-| transferType | String      | Y| Transfer direction, contract ->spot: `future-to-spot`, spot ->contract: `spot to future`, non secondary types return error codes `101040502`                                                                                                    |
-
-
-
->  Request Data
+> Request
 
 ```json
 {
-    "currencyCode":"USDT",
-    "amount":"5",
-    "transferType":"spot-to-future",
-    "clientId":"SFT1679454569469"
+  "currencyCode": "USDTTRX",
+  "chain": "TRX"
+}
+```
+
+### Response Data
+
+|       code        |  type  |                  comment                       |
+| ---- | ----- |---------- |
+|code	|int|	0：success, other: failure|
+|message	|string|	Error message|
+|data	|object|	|
+|-	address	|string|	Deposit address|
+|-	tag	|string|	Tag/memo|
+|-	depositMin	|string|	The minimum deposit amount of currency in a single transaction|
+
+> python
+
+```python
+python
+
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+
+url = "https://api.coinstore.com/api/fi/v3/asset/deposit/do"
+api_key = b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+    "currencyCode": "USDTTRX",
+    "chain": "TRX"
+})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+    'X-CS-APIKEY': api_key,
+    'X-CS-SIGN': signature,
+    'X-CS-EXPIRES': str(expires),
+    'exch-language': 'en_US',
+    'Content-Type': 'application/json',
+    'Accept': '*/*',
+    'Connection': 'keep-alive'
+}
+response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+print(response.text)
+```
+> Response Data
+
+```json
+{
+  "code": "0",
+  "message": "Success",
+  "data": {
+    "address": "TW4……",
+    "tag": "",
+    "depositMin": 0.00010000
+  }
 }
 ```
 
 
+## <span id="2">Get deposit history</span>
+Get deposit history
+
+### HTTP request:
+- POST /fi/v3/asset/deposit/record/list
+
+### Request
+
+|  code |  type  |  required  | comment                                                                |
+| ---- | ----- |---------- |------------------------------------------------------------------------|
+|currencyCode |string| Y| Currency code                                                          |
+|startDate |string| N| Start Time, format ‘yyyy-MM-dd HH:mm:ss’                               |
+|endDate |string| N| End Time, format ’yyyy-MM-dd HH:mm:ss‘                                 |
+|fromId |long| N| Deposit ID，default starts from 1                                       |
+|limit |int| N| Number of results per request. The maximum is 1000; The default is 500 |
+|externalId |string| N| External Id                                                            |
+|label |string| N| Label                                                                  |
+
+
+> Request
+
+```json
+{
+  "currencyCode": "USDT",
+  "startDate": "2024-03-01",
+  "endDate": "2024-03-08",
+  "fromId": "",
+  "limit": "10",
+  "externalId": "",
+  "label": ""
+}
+
+```
+
+### Response Data
+
+|       code        |  type  |                  comment                      |
+| ---- | ----- |--------- |
+|code	|type|	comment|
+|code	|int|	0：success, other: failure|
+|message	|String|	Error message|
+|data|	|  |
+|	externalId |string| ExternalId|
+|	label |string| Label|
+|	depositList |Object []|	Data|
+|--	 id	|long|	ID|
+|--	 symbol	|string|	Currency code|
+|--	 chainName	|string|	Chain name|
+|--	 chainProtocol	|string|	Chain protocol|
+|--	 amount	|string|	Amount|
+|--	 createdAt	|string|	Time|
+|--	 status	|int|	Deposit status, 0:Pending，1:Completed，2:Abnormal，3:Under Review，4:Rejected|
+|--	 explorer	|string|	The website of explorer|
+|--	 txId	|string|	TxID|
+|--	 internalType	|string|	Deposit type 0：On-chain 1：Internal transfer|
+|--	 lockAccount	|boolean|	Lockup period|
+
+```python
+python
+
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+
+url = "https://api.coinstore.com/api/fi/v3/asset/deposit/record/list"
+api_key = b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+    "currencyCode": "USDT",
+    "startDate": "2024-03-01",
+    "endDate": "2024-03-08",
+    "fromId": "",
+    "limit": "10",
+    "externalId": "",
+    "label": ""
+})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+    'X-CS-APIKEY': api_key,
+    'X-CS-SIGN': signature,
+    'X-CS-EXPIRES': str(expires),
+    'exch-language': 'en_US',
+    'Content-Type': 'application/json',
+    'Accept': '*/*',
+    'Connection': 'keep-alive'}
+response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+print(response.text)
+
+```
+> Response Data
+
+```json
+{
+  "code": "0",
+  "message": "Success",
+  "data": {
+    "depositList": [
+      {
+        "id": 38948,
+        "symbol": "doge",
+        "chainName": "doge",
+        "chainProtocol": "doge",
+        "amount": "10.61",
+        "createdAt": "2024-02-27 17:36:38",
+        "status": 1,
+        "explorer": "19ceb820c143ceae503cf6ce5a0c9064721f438099529d041026e062e99a0bdc8",
+        "txId": "9ceb820c143ceae503cf6ce5a0c9064721f438099529d041026e062e99a0bdc8",
+        "internalType": 0,
+        "lockAccount": false,
+        "noDepositMsg": null
+      }
+    ],
+    "externalId": null,
+    "label": null
+  }
+}
+```
+## <span id="2">Get withdrawal history</span>
+Get withdrawal history
+
+### HTTP Request:
+- POST /fi/v3/asset/withdraw/record/list
+
+### Request Data
+
+|  code |  type  | required |comment|
+| ---- | ----- |----------|-----|
+|currencyCode |string| N        | Currency code|
+|startDate |string| N        | Start Time, format ‘yyyy-MM-dd HH:mm:ss’|
+|endDate |string| N        | End Time, format ’yyyy-MM-dd HH:mm:ss‘|
+|fromId |long| N        | Withdrawal ID，default starts from 1|
+|limit |int| N        | Number of results per request. The maximum is 1000; The default is 500|
+|externalId |string| N        | ExternalId|
+|label |string| N        | Label|
+
+
+> Request
+
+```json
+{
+  "currencyCode": "",
+  "startDate": "2024-01-01",
+  "endDate": "2024-03-08",
+  "fromId": "",
+  "limit": "10",
+  "externalId": "",
+  "label": ""
+}
+
+```
+
+### Response Data
+
+|       code        |  type  | comment                                                                                                                         |
+| ---- | ----- |---------------------------------------------------------------------------------------------------------------------------------|
+|code	|type| 	comment                                                                                                                        |
+|code	|int| 	0：success, other: failure                                                                                                      |
+|message	|string| 	Error message                                                                                                                  |
+|data	| |                                                                                                                                 |
+|	externalId |string| ExternalId                                                                                                                      |
+|	label |string| Label                                                                                                                           |
+|	withdrawList |Object[]| 	Data                                                                                                                           |
+|--	 id	|long| 	ID                                                                                                                             |
+|--	 symbol	|string| 	Currency code                                                                                                                  |
+|--	 amount	|string| 	Amount                                                                                                                         |
+|--	 fee	|string| 	Fee                                                                                                                            |
+|--	 createdAt	|string| 	Time                                                                                                                           |
+|--	 status	|int| 	Withdrawal status, 0： Not reviewed, 1:Approved, 2:Rejected, 3:Payment in progress, 4:Payment failed, 5:Completed, 6:Cancelled. |
+|--	 explorer	|string| 	The website of explorer                                                                                                        |
+|--	 txId	|string| 	TxID                                                                                                                           |
+|--	 addressTo	|string| 	Receiving address                                                                                                              |
+|--	 chainName	|string| 	Chain Name                                                                                                                     |
+|--	 chainProtocol	|string| 	Chain protocol                                                                                                                 |
+|--	 internalType	|int| Withdrawal type 0：On-chain 1：Internal transfer                                                                                                                                |
+
+```python
+python
+
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+
+url = "https://api.coinstore.com/api/fi/v3/asset/withdraw/record/list"
+api_key = b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+    "currencyCode": "",
+    "startDate": "2024-01-01",
+    "endDate": "2024-03-08",
+    "fromId": "",
+    "limit": "10",
+    "externalId": "",
+    "label": ""
+})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+    'X-CS-APIKEY': api_key,
+    'X-CS-SIGN': signature,
+    'X-CS-EXPIRES': str(expires),
+    'exch-language': 'en_US',
+    'Content-Type': 'application/json',
+    'Accept': '*/*',
+    'Connection': 'keep-alive'}
+response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+print(response.text)
+
+```
+> Response
+
+```json
+{
+  "code": "0",
+  "message": "Success",
+  "data": {
+    "withdrawList": [
+      {
+        "id": 4886,
+        "symbol": "DOGE",
+        "amount": "0.3",
+        "fee": "0",
+        "createdAt": "2024-02-27 18:20:31",
+        "status": 5,
+        "showStatus": 2,
+        "explorer": "https://eth.btc.com/txinfo/",
+        "txId": "7b06acd90f839914f2676693927d994c264a0561893d3a5461a2a910d318acba",
+        "addressTo": "DFXm3XC49n3SBNqELip9LZHAo1nBaiDbdG",
+        "tag": null,
+        "chainName": "DOGE",
+        "chainProtocol": "DOGE",
+        "internalType": 0
+      }
+    ],
+    "externalId": null,
+    "label": null
+  }
+}
+```
+
+## <span id="2">Withdrawal</span>
+Withdrawal of tokens. Common sub-account does not support withdrawal;The API can only make withdrawal to verified addresses/account, and verified addresses can be set by WEB/APP.
+
+
+### HTTP Request:
+- POST /fi/v3/asset/doWithdraw
+
+### Request Data
+
+|  code |  type  | required   |comment|
+| ---- | ----- |------------|-----|
+|param	|type|	required|	comment|
+|currencyCode |string| Y| Currency code|
+|amount |string| Y| Withdrawal amount|
+|address |string| Y| Should be a trusted address|
+|tag |string| N| Tag/memo|
+|chainType |string| Y| Chain protocol|
+
+
+> Request
+
+```json
+{
+  "currencyCode": "USDT",
+  "amount": "1000",
+  "address": "TU4vEruvZwLLkSfV9bNw12EJTPvNr7Pvaa",
+  "tag": "698347",
+  "chainType": "TRX"
+}
+```
+
+### Response
+
+|       code        |  type  |                  comment                     |
+| ---- | ----- |--------- |
+|code	|type|	comment|
+|code	|int|	0：success, other: failure|
+|message	|String|	Error message|
+|data|||	
+|--	 id	|Long|	Withdrawal ID|
+
+```python
+python
+
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+
+url = "https://api.coinstore.com/api/fi/v3/asset/doWithdraw"
+api_key = b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+    "currencyCode": "USDT",
+    "amount": "1000",
+    "address": "TU4vEruvZwLLkSfV9bNw12EJTPvNr7Pvaa",
+    "tag": "698347",
+    "chainType": "TRX"
+})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+    'X-CS-APIKEY': api_key,
+    'X-CS-SIGN': signature,
+    'X-CS-EXPIRES': str(expires),
+    'Content-Type': 'application/json'}
+response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+print(response.text)
+
+```
+> Response
+
+```json
+{
+  "code": "0",
+  "message": "Success",
+  "data": {
+    "id": 4886
+  }
+}
+```
+
+## <span id="2">Cancel withdrawal</span>
+Cancel withdrawal
+
+### HTTP Request:
+- POST /fi/v3/asset/cancelWithdraw
+
+### Request
+
+|  code |  type  | required   |comment|
+| ---- | ----- |------------|-----|
+|withdrawId |long| Y| Withdrawal ID|
+
+
+> Request
+
+```json
+{
+  "withdrawId": 4886
+}
+```
+
+### Response Data
+
+|       code        | type   |                  comment                      |
+| ---- |--------|--------- |
+|code	| type   |	comment|
+|code	| int    |	0：success, other: failure|
+|message	| String |	Error message|
+|data	|        ||
+|--	 id	| Long   |	Withdrawal ID|
+
+```python
+python
+
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+
+url = "https://api.coinstore.com/api/fi/v3/asset/cancelWithdraw"
+api_key = b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+    "withdrawId": 4886
+})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+    'X-CS-APIKEY': api_key,
+    'X-CS-SIGN': signature,
+    'X-CS-EXPIRES': str(expires),
+    'exch-language': 'en_US',
+    'Content-Type': 'application/json',
+    'Accept': '*/*',
+    'Connection': 'keep-alive'}
+response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+print(response.text)
+
+```
+> Response
+
+```json
+{
+  "code": "0",
+  "message": "Success",
+  "data": {
+    "id": 4886
+  }
+}
+```
+
+## <span id="2">Fund transfer</span>
+Fund transfer
+
+#### Currently supporting contract<->spot transfer, API domain name address https://futures.api.coinstore.com/api Call support for ApiKey
+
+
+### HTTP Request:
+- POST /v1/future/transfer
+
+### Request
+
+|  code |  type  | required   | comment                                                                                  |
+| ---- | ----- |------------|------------------------------------------------------------------------------------------|
+|param	|type|	required| 	comment                                                                                 |
+|type |string| Y| Transfer type <br/>0：Transfer within account<br/>1：Master account to sub-account (Only applicable to API Key from master account) <br/>2：Sub-account to master account (Only applicable to API Key from master account)<br/>The default is 0 |
+|currencyCode |string| Y| Currrency code                                                                   |
+|amount |string| Y | Transfer amount                                                                                     |
+|from |int| Y | The remitting account , 1：Spot account 2：Futures account                                                                      |
+|to |int| Y | The beneficiary account , 1：Spot account 2：Futures account                                                                       |
+|subAccount |string| N| Name of the sub-account,When type is 1/2, this parameter is required.                                                                  |
+
+
+> Request
+
+```json
+{
+  "type": "0",
+  "currencyCode": "USDT",
+  "amount": "1",
+  "from": "1",
+  "to": "2",
+  "subAccount": ""
+}
+```
+
+### Response
+
+|       code        | type   |                  comment                      |
+| ---- |--------|--------- |
+|code	|type|	comment|
+|code	|int|	0：success, other: failure|
+|message	|string|	Error message|
+
+```python
+python
+
+import hashlib
+import hmac
+import json
+import math
+import time
+import requests
+
+url = "https://api.coinstore.com/api/v1/future/transfer"
+api_key = b'your api_key'
+secret_key = b'your secret_key'
+expires = int(time.time() * 1000)
+expires_key = str(math.floor(expires / 30000))
+expires_key = expires_key.encode("utf-8")
+key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
+key = key.encode("utf-8")
+payload = json.dumps({
+    "type": "0",
+    "currencyCode": "USDT",
+    "amount": "1",
+    "from": "1",
+    "to": "2",
+    "subAccount": ""
+})
+payload = payload.encode("utf-8")
+signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
+headers = {
+    'X-CS-APIKEY': api_key,
+    'X-CS-SIGN': signature,
+    'X-CS-EXPIRES': str(expires),
+    'exch-language': 'en_US',
+    'Content-Type': 'application/json',
+    'Accept': '*/*',
+    'Connection': 'keep-alive'}
+response = requests.request("POST", url, headers=headers, data=payload, verify=False)
+print(response.text)
+
+```
+> Response
+
+```json
+{
+  "code": "0",
+  "message": "Success"
+}
+```
 > Response Data Fail:
 
 ```json
@@ -506,15 +1189,7 @@ print(response.text)
   "data": null
 }
 ```
-> Response Data Success:
 
-```json
-{
-    "code": 200,
-    "msg": null,
-    "data":0
-}
-```
 #### Other response code description
 
 
