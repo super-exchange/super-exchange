@@ -1621,7 +1621,7 @@ print(response.text)
 
 |    code    |  type   | required |       comment        |
 | ---------- | ------- | -------- | -------------------- |
-| symbol     | string | false| 不传撤销所有币对订单 |
+| symbol     | string | true| 撤销指定交易对所有订单 |
 
 ### 响应数据
 

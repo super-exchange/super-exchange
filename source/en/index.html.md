@@ -1640,7 +1640,7 @@ print(response.text)
 
 |    code    |  type   | required |       comment        |
 | ---------- | ------- | -------- | -------------------- |
-| symbol     | string | false| cancel all token pair orders without transfer |
+| symbol     | string | true| Cancel all orders for the specified trading pair |
 
 ### Response Data
 
