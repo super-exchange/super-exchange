@@ -603,7 +603,7 @@ Query user futures position
 | ---------- | ------- | -------- | -------------------- |
 |  contractId| int|Y| symbol ID|
 |   leverage| int|Y|  leverage rate, 0 represents automatic mode, isolated mode can’t be 0|
-|   isolated| int|Y|  margin type, default false: cross, true: isolated|
+|   isolated| boolean|Y|  margin type, default false:cross, true:isolated|
 
 ### Response Data
 
@@ -628,7 +628,7 @@ Create order
 | accountType| int|N| account type |
 | clientOrderId| string|N| client order ID, uuid is used if not passed |
 | contractId| int|Y| contract ID|
-| marginRate| string|Y| margin rate, cross>0, isolated>0|
+| marginRate| string|N| margin rate, cross>0, isolated>0 marginRate=1/levarage,range:0~1|
 | leverage| int|Y| margin rate|
 | marginType| int|Y| margin type, 1: cross, 2: isolated|
 | orderSubType| int|Y|0 (default value), 1 (passive order), 2 (latest price triggering conditional order), 3 (index triggering conditional order), 4 (marked price triggering conditional order)|
@@ -996,7 +996,7 @@ Place batch
 | orders        | list | Y      |
 | - clientOrderId| string|N| client order ID, uuid is used if not passed |
 | - contractId| int|Y| contract ID|
-| - initRate| string|Y| margin rate, cross>0, isolated>0|
+| - initRate| string|Y| margin rate, cross>0, isolated>0,initRate=1/leverage,range:0~1|
 | - marginType| int|Y| margin type, 1: cross, 2: isolated|
 | - orderSubType| int|Y|0 (default value), 1 (passive order)|
 | - orderType| int|Y| order type, 1 (limit), 3 (market)|
@@ -2031,7 +2031,7 @@ Symbol value in the data format is: contract ID
 |positionConfgs      |object[]  | position configuration list |
 | ├─contractId      |long  |  contract ID  |
 | ├─leverage      |int  |  leverage rate, 0 represents automatic mode  |
-| ├─isolated      |boolean  |  margin type, default false cros |
+| ├─isolated      |boolean  |  margin type, default false:cross, true:isolated|
 
 #### Open Orders
 

@@ -575,7 +575,7 @@ HTTP常见的错误码如下：
 | ---------- | ------- | -------- | -------------------- |
 |  contractId| int|Y| 交易对ID|
 |   leverage| int|Y|  杠杆倍数, 0为自动模式  逐仓 不能为0|
-|   isolated| int|Y|  保证金类型 默认 false 全仓  true 逐仓|
+|   isolated|boolean|Y| 保证金类型 默认 false全仓 true逐仓|
 
 ### 响应数据
 
@@ -600,7 +600,7 @@ HTTP常见的错误码如下：
 | accountType| int|N| 账号类型 |
 | clientOrderId| string|N| 客户端委托ID,如果不传使用uuid |
 | contractId| int|Y| 合约ID|
-| marginRate| string|Y| 保证金率，全仓时>0，逐仓时>0|
+| marginRate| string|Y| 保证金率,marginRate=1/leverage 范围:0-1|
 | leverage| int|Y| 保证金倍数|
 | marginType| int|Y| 保证金类型，全仓1，逐仓2|
 | orderSubType| int|Y|0（默认值），1（被动委托），2（最近价触发条件委托），3（指数触发条件委托），4（标记价触发条件委托）|
@@ -966,7 +966,7 @@ HTTP常见的错误码如下：
 | orders        | list | Y      |
 | - clientOrderId| string|N| 客户端委托ID,如果不传使用uuid |
 | - contractId| int|Y| 合约ID|
-| - initRate| string|Y| 保证金率，全仓时>0，逐仓时>0|
+| - initRate| string|Y| 保证金率,保证金率=1/leverage|
 | - marginType| int|Y| 保证金类型，全仓1，逐仓2|
 | - orderSubType| int|Y|0（默认值），1（被动委托）|
 | - orderType| int|Y| 委托类型，1（限价），3（市价）|
@@ -1997,7 +1997,7 @@ wss://ws-futures.coinstore.com/socket.io/?EIO=3&transport=websocket
 |positionConfgs      |object[]  | 持仓配置列表 |
 | ├─contractId      |long  |  合约ID  |
 | ├─leverage      |int  |  杠杆倍数, 0为自动模式  |
-| ├─isolated      |boolean  |  保证金类型 默认 false 全仓 |
+| ├─isolated      |boolean  |  保证金类型 默认 false全仓 true逐仓 |
 
 ####当前委托
 

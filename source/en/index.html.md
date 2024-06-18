@@ -938,7 +938,7 @@ Withdrawal of tokens. Common sub-account does not support withdrawal;The API can
 |amount |string| Y| Withdrawal amount|
 |address |string| Y| Should be a trusted address|
 |tag |string| N| Tag/memo|
-|chainType |string| Y| Chain protocol|
+|chainType |string| Y| Chain protocol eg:trc20 bnbbsc erc20 sol|
 
 
 > Request
@@ -948,8 +948,8 @@ Withdrawal of tokens. Common sub-account does not support withdrawal;The API can
   "currencyCode": "USDT",
   "amount": "1000",
   "address": "TU4vEruvZwLLkSfV9bNw12EJTPvNr7Pvaa",
-  "tag": "698347",
-  "chainType": "TRX"
+  "tag": "",
+  "chainType": "trc20"
 }
 ```
 

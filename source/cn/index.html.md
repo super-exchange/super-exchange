@@ -924,7 +924,7 @@ print(response.text)
 |amount |string| Y| 划转金额|
 |address |string| Y| 提币地址|
 |tag |string| N| 标签 如需要|
-|chainType |string| Y| 链协议 币种详情中chainProtocol|
+|chainType |string| Y| 链协议 币种详情中chainProtocol 例如:trc20 bnbbsc erc20 sol |
 
 
 > 请求
@@ -934,8 +934,8 @@ print(response.text)
   "currencyCode": "USDT",
   "amount": "1000",
   "address": "TU4vEruvZwLLkSfV9bNw12EJTPvNr7Pvaa",
-  "tag": "698347",
-  "chainType": "TRX"
+  "tag": "",
+  "chainType": "trc20"
 }
 ```
 
