@@ -1553,18 +1553,22 @@ print(response.text)
 | ├─state| string|   |
 | ├─ordId| long |   |
 
-##  <span id="5">通过ClientOrderId撤单</span>
+##  <span id="5">通过ClientOrderId批量撤单</span>
 
 
 ### HTTP请求: 
-- POST /trade/order/cancel
+- POST /trade/order/cancelBatchByClOrdId
 
 > 请求体
 
 ```json
 {
-  "symbol":"LUFFYUSDT",
-  "clOrdId":"ccc666"
+    "symbol": "BTCUSDT",
+    "clientOrderIds": [
+        "ccc666",
+        "ccc777",
+        "ccc888"
+    ]
 }
 ```
 
@@ -1586,7 +1590,8 @@ expires_key = str(math.floor(expires / 30000))
 expires_key = expires_key.encode("utf-8")
 key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
 key = key.encode("utf-8")
-payload = json.dumps({"symbol":"LUFFYUSDT","clOrdId":"ccc666"})
+payload = json.dumps({
+"symbol": "BTCUSDT","clientOrderIds":["ccc666","ccc777","ccc888"]})
 payload = payload.encode("utf-8")
 signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
 headers = {'X-CS-APIKEY':api_key,'X-CS-SIGN':signature,'X-CS-EXPIRES':str(expires),'Content-Type':'application/json'}
@@ -1599,14 +1604,7 @@ print(response.text)
 > 响应
 
 ```json
-{
-           "code": 0,
-           "data": {
-               "clientOrderId": "ccc666",
-               "state": "CANCELED",
-               "ordId": 1814964593492941
-           }
- }
+{"data":{"success":["ccc666","ccc777","ccc888"]},"code":0}
 ```
 
 ### 请求参数
@@ -1614,7 +1612,7 @@ print(response.text)
 |    code    |  type   | required |       comment        |
 | ---------- | ------- | -------- | -------------------- |
 | symbol     | string | true| 交易对 |
-| clOrdId    | string | true| 撤销指定交易对指定ClientOrderId的订单 |
+| ├─clientOrderIds | string | true| 撤销指定交易对指定ClientOrderId的订单 |
 
 ### 响应数据
 

@@ -1575,19 +1575,23 @@ print(response.text)
 | ├─state| string|  | |
 | ├─ordId| long |  | |
 
-##  <span id="5">Cancel order by ClientOrderId </span>
+##  <span id="5">Batch cancel order by ClientOrderId </span>
 
 
 ### HTTP Request: 
-- POST /trade/order/cancel
+- POST /trade/order/cancelBatchByClOrdId
 
 > Request Body
 
 ```json
- {
-   "symbol":"LUFFYUSDT",
-   "clOrdId":"ccc666"
- }
+{
+    "symbol": "BTCUSDT",
+    "clientOrderIds": [
+        "ccc666",
+        "ccc777",
+        "ccc888"
+    ]
+}
 ```
 
 
@@ -1608,7 +1612,8 @@ expires_key = str(math.floor(expires / 30000))
 expires_key = expires_key.encode("utf-8")
 key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
 key = key.encode("utf-8")
-payload = json.dumps({"symbol":"LUFFYUSDT","clOrdId":"ccc666"})
+payload = json.dumps({
+"symbol": "BTCUSDT","clientOrderIds":["ccc666","ccc777","ccc888"]})
 payload = payload.encode("utf-8")
 signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
 headers = {'X-CS-APIKEY':api_key,'X-CS-SIGN':signature,'X-CS-EXPIRES':str(expires),'Content-Type':'application/json'}
@@ -1619,14 +1624,7 @@ print(response.text)
 > Response
 
 ```json
-{
-           "code": 0,
-           "data": {
-               "clientOrderId": "ccc666",
-               "state": "CANCELED",
-               "ordId": 1814964593492941
-           }
- }
+{"data":{"success":["ccc666","ccc777","ccc888"]},"code":0}
 ```
 
 ### Request Parameters
@@ -1634,7 +1632,7 @@ print(response.text)
 |    code    |  type   | required |       comment        |
 | ---------- | ------- | -------- | -------------------- |
 | symbol     | string | true| trading pair |
-| clOrdId    | string | true| ClientOrderId |
+|├─clientOrderIds| string | true| ClientOrderId |
 
 ### Response Data
 
