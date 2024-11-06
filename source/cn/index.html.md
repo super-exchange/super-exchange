@@ -107,8 +107,6 @@ WebSocket是HTML5一种新的协议（Protocol）。它实现了客户端与服�
 
 `wss://ws.coinstore.com/s/ws`
 
-为保证API服务的稳定性，建议使用日本AWS云服务器进行访问。如使用中国大陆境内的客户端服务器，连接的稳定性将难以保证。
-
 ## 限频规则
 
 **相同ip**
@@ -1495,13 +1493,12 @@ print(response.text)
 
 ```json
 {
-  "ordId": 1722183748419690,
-  "symbol":"LUFFYUSDT"
+  "symbol":"LUFFYUSDT",
+  "ordId": 1722183748419690
 }
 ```
 
 > python 
-
 ```python
 import hashlib
 import hmac
@@ -1556,17 +1553,18 @@ print(response.text)
 | ├─state| string|   |
 | ├─ordId| long |   |
 
-##  <span id="5">一键撤单</span>
+##  <span id="5">通过ClientOrderId撤单</span>
 
 
 ### HTTP请求: 
-- POST /trade/order/cancelAll
+- POST /trade/order/cancel
 
 > 请求体
 
 ```json
 {
-  "symbol":"LUFFYUSDT"
+  "symbol":"LUFFYUSDT",
+  "clOrdId":"ccc666"
 }
 ```
 
@@ -1576,11 +1574,11 @@ print(response.text)
 ```python
 import hashlib
 import hmac
-import json
 import math
 import time
 import requests
-url = "https://api.coinstore.com/api/trade/order/cancelAll"
+import json
+url = "https://api.coinstore.com/api/trade/order/cancel"
 api_key=b'your api_key'
 secret_key = b'your secret_key'
 expires = int(time.time() * 1000)
@@ -1588,21 +1586,10 @@ expires_key = str(math.floor(expires / 30000))
 expires_key = expires_key.encode("utf-8")
 key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
 key = key.encode("utf-8")
-payload = json.dumps({
-  "symbol": "BTCUSDT"
- })
+payload = json.dumps({"symbol":"LUFFYUSDT","clOrdId":"ccc666"})
 payload = payload.encode("utf-8")
 signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
-headers = {
-   'X-CS-APIKEY': api_key,
- 'X-CS-SIGN': signature,
- 'X-CS-EXPIRES': str(expires),
- 'exch-language': 'en_US',
- 'Content-Type': 'application/json',
- 'Accept': '*/*',
- # 'Host': 'https://api.coinstore.com',
- 'Connection': 'keep-alive'
-}
+headers = {'X-CS-APIKEY':api_key,'X-CS-SIGN':signature,'X-CS-EXPIRES':str(expires),'Content-Type':'application/json'}
 response = requests.request("POST", url, headers=headers, data=payload)
 print(response.text)
 ```
@@ -1613,15 +1600,21 @@ print(response.text)
 
 ```json
 {
-    "code": 0
-}
+           "code": 0,
+           "data": {
+               "clientOrderId": "ccc666",
+               "state": "CANCELED",
+               "ordId": 1814964593492941
+           }
+ }
 ```
 
 ### 请求参数
 
 |    code    |  type   | required |       comment        |
 | ---------- | ------- | -------- | -------------------- |
-| symbol     | string | true| 撤销指定交易对所有订单 |
+| symbol     | string | true| 交易对 |
+| clOrdId    | string | true| 撤销指定交易对指定ClientOrderId的订单 |
 
 ### 响应数据
 

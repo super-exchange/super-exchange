@@ -106,8 +106,6 @@ Private interface can be used for trading management. Every private request must
 
 `wss://ws.coinstore.com/s/ws`
 
-To ensure the stability of API service, it is recommended to access using Japanese AWS cloud server. If the client server in Chinese mainland is used, it would be difficult to guarantee the stability of the connection.
-
 ## Rate Limit
 
 **Same IP**
@@ -1517,9 +1515,9 @@ Cancel orders
 
 ```json
 {
-  "ordId": 1722183748419690,
-  "symbol":"LUFFYUSDT"
-}
+  "symbol":"LUFFYUSDT",
+  "ordId": 1722183748419690
+ }
 ```
 
 > python 
@@ -1577,18 +1575,19 @@ print(response.text)
 | ├─state| string|  | |
 | ├─ordId| long |  | |
 
-##  <span id="5"> One-click cancellation </span>
+##  <span id="5">Cancel order by ClientOrderId </span>
 
 
 ### HTTP Request: 
-- POST /trade/order/cancelAll
+- POST /trade/order/cancel
 
 > Request Body
 
 ```json
-{
-  "symbol":"LUFFYUSDT"
-}
+ {
+   "symbol":"LUFFYUSDT",
+   "clOrdId":"ccc666"
+ }
 ```
 
 
@@ -1597,11 +1596,11 @@ print(response.text)
 ```python
 import hashlib
 import hmac
-import json
 import math
 import time
 import requests
-url = "https://api.coinstore.com/api/trade/order/cancelAll"
+import json
+url = "https://api.coinstore.com/api/trade/order/cancel"
 api_key=b'your api_key'
 secret_key = b'your secret_key'
 expires = int(time.time() * 1000)
@@ -1609,21 +1608,10 @@ expires_key = str(math.floor(expires / 30000))
 expires_key = expires_key.encode("utf-8")
 key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
 key = key.encode("utf-8")
-payload = json.dumps({
-  "symbol": "BTCUSDT"
- })
+payload = json.dumps({"symbol":"LUFFYUSDT","clOrdId":"ccc666"})
 payload = payload.encode("utf-8")
 signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
-headers = {
-   'X-CS-APIKEY': api_key,
- 'X-CS-SIGN': signature,
- 'X-CS-EXPIRES': str(expires),
- 'exch-language': 'en_US',
- 'Content-Type': 'application/json',
- 'Accept': '*/*',
- # 'Host': 'https://api.coinstore.com',
- 'Connection': 'keep-alive'
-}
+headers = {'X-CS-APIKEY':api_key,'X-CS-SIGN':signature,'X-CS-EXPIRES':str(expires),'Content-Type':'application/json'}
 response = requests.request("POST", url, headers=headers, data=payload)
 print(response.text)
 ```
@@ -1632,22 +1620,28 @@ print(response.text)
 
 ```json
 {
-    "code": 0
-}
+           "code": 0,
+           "data": {
+               "clientOrderId": "ccc666",
+               "state": "CANCELED",
+               "ordId": 1814964593492941
+           }
+ }
 ```
 
 ### Request Parameters
 
 |    code    |  type   | required |       comment        |
 | ---------- | ------- | -------- | -------------------- |
-| symbol     | string | true| Cancel all orders for the specified trading pair |
+| symbol     | string | true| trading pair |
+| clOrdId    | string | true| ClientOrderId |
 
 ### Response Data
 
 |       code        |  type  |        example        |                      comment                       |
 | ----------------- | ------ | --------------------- | -------------------------------------------------- |
-| code            | int    | 0                     |     0: success, other: failure                                               |
-| message         | string    |                 |    error message                                    |
+| code            | int    | 0                     | 0: success, other: failure                                               |
+| message         | string    |                 |error message                                    |
 
 
 ## <span id="6"> Create order </span>
@@ -1892,31 +1886,22 @@ Batch cancellation according to order id.
 ```python
 import hashlib
 import hmac
-import json
 import math
 import time
 import requests
-url = "https://api.coinstore.com/api/trade/order/cancelAll"
+import json
+url = "https://api.coinstore.com/api/trade/order/cancelBatch"
 api_key=b'your api_key'
-secret_key = b'your secret_key'
+secret_key = b'secret_key'
 expires = int(time.time() * 1000)
 expires_key = str(math.floor(expires / 30000))
 expires_key = expires_key.encode("utf-8")
 key = hmac.new(secret_key, expires_key, hashlib.sha256).hexdigest()
 key = key.encode("utf-8")
-payload = json.dumps({"symbol": "BTCUSDT"})
+payload = json.dumps({"symbol":"btcusdt","orderId":[1782428898165698]})
 payload = payload.encode("utf-8")
 signature = hmac.new(key, payload, hashlib.sha256).hexdigest()
-headers = {
-   'X-CS-APIKEY': api_key,
- 'X-CS-SIGN': signature,
- 'X-CS-EXPIRES': str(expires),
- 'exch-language': 'en_US',
- 'Content-Type': 'application/json',
- 'Accept': '*/*',
- # 'Host': 'https://api.coinstore.com',
- 'Connection': 'keep-alive'
-}
+headers = {'X-CS-APIKEY':api_key,'X-CS-SIGN':signature,'X-CS-EXPIRES':str(expires),'Content-Type':'application/json'}
 response = requests.request("POST", url, headers=headers, data=payload)
 print(response.text)
 ```
@@ -2077,8 +2062,8 @@ import math
 import time
 import requests
 url = "https://api.coinstore.com/api/v2/trade/order/orderInfo?ordId=1780715084580128"
-api_key=b'da2b7ed9aeee00744193d251bc99a09c'
-secret_key = b'28fd41afcb4bdcb752634b1549ad9aa7'
+api_key=b''
+secret_key = b''
 expires = int(time.time()* 1000)
 expires_key = str(math.floor(expires / 30000))
 expires_key = expires_key.encode("utf-8")
