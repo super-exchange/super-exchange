@@ -1518,7 +1518,6 @@ HTTP常见的错误码如下：
         "fr": "0.000033",
         "mp": "56673.9",
         "cid": 100100000,
-        "pv": 2158,
         "ph": "51001",
         "tv": "116",
         "tt": "5916.096",
@@ -1550,7 +1549,6 @@ HTTP常见的错误码如下：
 | ├─ip| Double|  指数价|
 | ├─mp|  Double| 标记价 |
 | ├─lp| Double| 最新价|
-| ├─pv| Long| 持仓量 |
 | ├─tv| Long|  24小时成交量 |
 | ├─tt| Long| 24小时成交额 |
 | ├─ph| Double|  24小时最高价 |
@@ -1885,7 +1883,6 @@ wss://ws-futures.coinstore.com/socket.io/?EIO=3&transport=websocket
 | ip| BigDecimal| 指数价|
 | mp|  BigDecimal| 标记价 |
 | lp| BigDecimal| 最新价|
-| pv| Long| 持仓量 |
 | tv| Long| 24小时成交量 |
 | tt| Long| 24小时成交额 |
 | ph| BigDecimal| 24小时最高价 |

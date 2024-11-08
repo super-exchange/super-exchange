@@ -1552,7 +1552,6 @@ Get all trade records
         "fr": "0.000033",
         "mp": "56673.9",
         "cid": 100100000,
-        "pv": 2158,
         "ph": "51001",
         "tv": "116",
         "tt": "5916.096",
@@ -1584,7 +1583,6 @@ Get all trade records
 | ├─ip| Double|  index price|
 | ├─mp|  Double| marked price |
 | ├─lp| Double| latest price|
-| ├─pv| Long| positions |
 | ├─tv| Long|  24-hour trade volume |
 | ├─tt| Long| 24-hour trade amount |
 | ├─ph| Double|  24-hour high price |
@@ -1919,7 +1917,6 @@ Symbol value in the data format is: contract ID
 | ip| BigDecimal| index price|
 | mp|  BigDecimal| marked price |
 | lp| BigDecimal| latest price|
-| pv| Long| positions |
 | tv| Long| 24-hour trade volume |
 | tt| Long| 24-hour trade amount |
 | ph| BigDecimal| 24-hour high price |
