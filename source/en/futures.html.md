@@ -1137,105 +1137,11 @@ Batch cancellation according to order id
 
 
 
-## <span id="3">Get user's all trade records</span>
-Get all trade records
-
-### HTTP Request: 
-- GET /api/future/queryHisMatch
-
-
-> Response
-
-```json
-{
-  "code" : 0,
-  "data" : [ {
-    "applId" : 0,
-    "askFee" : "string",
-    "askInitRate" : "string",
-    "askMarginType" : 0,
-    "askMatchType" : 0,
-    "askOrderId" : "string",
-    "askPnl" : "string",
-    "askPnlType" : 0,
-    "askPositionEffect" : 0,
-    "askUserId" : 0,
-    "bidFee" : "string",
-    "bidInitRate" : "string",
-    "bidMarginType" : 0,
-    "bidMatchType" : 0,
-    "bidOrderId" : "string",
-    "bidPnl" : "string",
-    "bidPnlType" : 0,
-    "bidPositionEffect" : 0,
-    "bidUserId" : 0,
-    "bonusAccountType" : 0,
-    "contractId" : 0,
-    "execId" : "string",
-    "matchAmt" : "string",
-    "matchPrice" : "string",
-    "matchQty" : "string",
-    "matchTime" : 0,
-    "side" : 0,
-    "takerSide" : 0,
-    "updateTime" : 0
-  } ],
-  "message" : "string"
-}
-```
-
-### Request Parameters
-
-|    code    |  type   | required |       comment        |
-| ---------- | ------- | -------- | -------------------- |
-| contractId| int|N| contract id|
-| endTime| string|N| end time |
-| startTime| string|N| start time|
-| pageNum| string|N| page number|
-| pageSize| string|N| page size|
-| side| string|N| side -1 Previous, 1 Next|
-
-### Response Data
-
-|       code        |  type  |                     comment                       |
-| ----------------- | ------ |-------------------------------------------------- |
-| code            | int    | 0                     |     0: success, other: failure                                               |
-| message         | string    |                 |    error message                                    |
-| data | object|    |
-| -	applId	|	int	  |	futures ID, 2	|
-| -	matchTime	|	Long	  |	trade time	|
-| -	contractId	|	Long	  |	symbol ID, contract ID	|
-| -	execId	|	Long	  |	trade ID	|
-| -	bidUserId	|	Long	  |	bid user ID	|
-| -	askUserId	|	Long	  |	ask user ID	|
-| -	bidOrderId	|	Long	  |	bid order ID	|
-| -	askOrderId	|	Long	  |	ask order ID	|
-| -	matchPrice	|	Double	  |	trade price	|
-| -	matchQty	|	int	  |	trade volume	|
-| -	matchAmt	|	Double	  |	trade amount	|
-| -	bidFee	|	Double	  |	bid fee	|
-| -	askFee	|	Double	  |	ask fee	|
-| -	takerSide	|	int	  |	Taker side, 1: bid Taker, -1: ask Taker	|
-| -	side	|	int	  |	bid/ask side	|
-| -	updateTime	|	Long	  |	last update time	|
-| -	bidPositionEffect	|	int	  |	bid position effect	|
-| -	askPositionEffect	|	int	  |	ask position effect	|
-| -	bidMarginType	|	int	  |	bid margin type	|
-| -	askMarginType	|	int	  |	ask margin type	|
-| -	bidInitRate	|	Double	  |	bid initial margin rate	|
-| -	askInitRate	|	Double	  |	ask initial margin rate	|
-| -	bidMatchType	|	int	  |	bid trade type: 0: ordinary trade, 1: liquidation trade, 2: forced deduction trade (bankrupt party) 3: forced deduction	|
-| -	askMatchType	|	int	  |	ask trade type: 0: ordinary trade, 1: liquidation trade, 2: forced deduction trade (bankrupt party) 3: forced deduction	|
-| -	bidPnlType	|	int	  |	bid P&L type: 0: ordinary trade, 1: ordinary close, 2: liquidation, 3: forced deduction	|
-| -	bidPnl	|	Double	  |	bid close P&L	|
-| -	askPnlType	|	int	  |	ask P&L type: 0: ordinary trade, 1: ordinary close, 2: liquidation, 3: forced deduction	|
-| -	askPnl	|	Double	  |	ask close P&L	|
-
-
-## <span id="3">Get user's all trade records V2</span>
+## <span id="4">Get user's all trade records V2</span>
 Get all trade records V2 version
 
 #### The new interface API domain name address `https://futures.coinstore.com`  Call support for ApiKey
+
 
 ### HTTP Request:
 - GET /api/v2/trade/order/queryHisMatch
@@ -1246,63 +1152,64 @@ Get all trade records V2 version
 ```json
 {
   "code" : 0,
-  "data" : [
-      {
-        "accountId": 3431,
-        "contractId": 100300144,
-        "orderId": 1762426675003393,
-        "clOrdId": "c819f4d2282f486d9ed4711327d6381e",
-        "matchId": 10763,
-        "tradeId": 2177,
-        "execSize": 6,
-        "matchAmt": -0.672000000000000000,
-        "avgPrice": 112.000000000000000000,
-        "orderStatus": 4,
-        "orderRole": "MAKER",
-        "remainingSize": 0,
-        "pnl": 0.0,
-        "fee": 0.000168,
-        "matchTime": 1680781089260
-      }
-  ],
-  "message" : "string"
+  "data" : [ {
+      "accountId": 3431,
+      "contractId": 100300144,
+      "orderId": 1762426675003393,
+      "clOrdId": "c819f4d2282f486d9ed4711327d6381e",
+      "matchId": 10763,
+      "tradeId": 2177,
+      "execSize": 6,
+      "matchAmt": -0.672000000000000000,
+      "avgPrice": 112.000000000000000000,
+      "orderStatus": 4,
+      "orderRole": "MAKER",
+      "remainingSize": 0,
+      "pnl": 0.0,
+      "fee": 0.000168,
+      "matchTime": 1680781089260
+  } ],
+  "msg" : "string"
 }
 ```
 
 ### Request Parameters
 
-|    code    | type   | required | comment             |
-| ---------- |--------| -------- |---------------------|
-| contractId| int    |N| contract id         |
-| ordId| long      |N| order id             |
-|pageNum| int | N | Current page number,default 1 |
-|pageSize| int | N | Quantity per page,default  20 |
-| side| int    |N| side -1 sell, 1 buy |
+|    code    | type   | required | comment            |
+| ---------- |--------| -------- |--------------------|
+| contractId| int    |N| contract id               |
+| ordId| int      |N| order id        |
+| pageNum| string |N|	Current page number,default 1|
+| pageSize| string |N|Quantity per page,default 20  |
+| side| string |N| side -1 sell, 1 buy|
 
 ### Response Data
 
-| code                 |  type  | comment                                                                                                                                 |
-|----------------------| ------ |-----------------------------------------------------------------------------------------------------------------------------------------|
-| code                 | int    | 0                                                                                                                                       |     0: success, other: failure                                               |
-| message              | string    |                                                                                                                                         |    error message                                    |
-| data                 | object|                                                                                                                                         |
-| -	accountId	         | 	int	    | 	account id	                                                                                                                            |
-| -	contractId	        | 	long	   | 	symbol ID, contract ID	                                                                                                                |
-| -	orderId	           | 	Long	   | 	order ID	                                                                                                                              |
-| -	clOrdId	           | 	string	 | 	Client delegate ID	                                                                                                                    |
-| -	matchId	           | 	Long	   | 	match ID	                                                                                                                              |
-| -	tradeId	           | 	Long	   | 	deal ID	                                                                                                                               |
-| -	execSize	          | 	int	    | 	Transaction quantity	                                                                                                                  |
-| -	matchAmt	          | 	Double	 | 	Transaction amount	                                                                                                                    |
-| -	avgPrice	          | 	Double	 | 	Average transaction price	                                                                                                             |
-| -	orderStatus	       | 	int	    | 	order status 0：NOT_DECLARE 1:IN_DECLARE 2:NOT_MATCH 3:PORTION_MATCH 4: ALL_MATCH 5：PORTION_CANCEL 6： ALL_CANCEL 7:IN_CANCEL 8:INVALID	 |
-| -	orderRole	         | 	string	 | 	role：Taker,Maker		                                                                                                                     |
-| -	remainingSize	     | 	int	    | 	remain quantity	                                                                                                                       |
-| -	pnl	               | 	Double	 | 	Profit and loss	                                                                                                                       |
-| -	fee	               | 	Double	 | 	Accumulated commission	                                                                                                                |
-| -	matchTime	         | 	Long	   | 	match time	                                                                                                                            |
-
-
+| code             | type     | comment                                                               |
+|------------------|----------|-----------------------------------------------------------------------|
+| code             | int      | 0                                                                     |     0：成功，其他失败                                               |
+| msg              | string   |                                                                       |    错误信息                                    |
+| data             | object   |                                                                       |
+| -	accountId	     | 	int	    | 	account id                                                           |
+| -	contractId	    | 	long	   | 	symbol ID, contract ID	                                                           |
+| -	orderId	       | 	Long	   | order ID                                                               |
+| -	clOrdId	       | 	string	 | 	Client delegate ID                                            |
+| -	matchId	       | 	Long	   | 	match ID                                                               |
+| -	tradeId	       | 	Long	   | 	deal ID                                                           |
+| -	execSize	      | 	int	    | 	Transaction quantity                                                              |
+| -	matchAmt	      | 	Double	 | 	Transaction amount                                                                |
+| -	avgPrice	      | 	Double	 | Average transaction price	                                                                |
+| -	orderStatus	   | 	int	    | order status 0：NOT_DECLARE 1:IN_DECLARE 2:NOT_MATCH 3:PORTION_MATCH 4: ALL_MATCH 5：PORTION_CANCEL 6： ALL_CANCEL 7:IN_CANCEL 8:INVALID	 |
+| -	orderRole	     | 	string	 | 	role：Taker,Maker	                                                     |
+| -	remainingSize	 | 	int	    | 	remain quantity                                                                |
+| -	pnl	           | 	Double	 | 	Profit and loss                                                           |
+| -	fee	           | 	Double	 | 	Accumulated commission                                                               |
+| -	matchTime	     | 	Long	   | 	match time                     |
+	                                                                                                                            |
+	                                                                                                                            
+	                                                                                                                            
+	                                                                                                                            
+	                                                                                                                            
 ## <span id="3">User forced reduction</span>
 Get all trade records
 
